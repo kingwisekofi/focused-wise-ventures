@@ -382,4 +382,148 @@
         function toggleCart() {
             const drawer = document.getElementById('cart-drawer');
             drawer.classList.toggle('hidden');
-            if (!drawer.classList.contains('hidden')) { render
+            if (!drawer.classList.contains('hidden')) { renderCartItems(); }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-400">Your cart is currently empty.</div>`;
+                updateCartTotals();
+                return;
+            }
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'pt-4 first:pt-0 flex items-center justify-between';
+                div.innerHTML = `
+                    <div class="pr-3">
+                        <h4 class="font-bold text-white text-sm">${item.name}</h4>
+                        <p class="text-xs text-teal-400 font-semibold mt-0.5">GH₵ ${item.price.toFixed(2)} x ${item.quantity}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateQuantity('${item.id}', -1)" class="w-7 h-7 bg-navy-700 hover:bg-navy-600 rounded-lg text-white font-bold flex items-center justify-center">-</button>
+                        <span class="text-sm font-bold w-5 text-center">${item.quantity}</span>
+                        <button onclick="updateQuantity('${item.id}', 1)" class="w-7 h-7 bg-navy-700 hover:bg-navy-600 rounded-lg text-white font-bold flex items-center justify-center">+</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            updateCartTotals();
+        }
+
+        function updateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = parseFloat(document.getElementById('delivery-location').value);
+            const grandTotal = subtotal + deliveryFee;
+            document.getElementById('cart-subtotal').innerText = `GH₵ ${subtotal.toFixed(2)}`;
+            document.getElementById('cart-delivery-fee').innerText = `GH₵ ${deliveryFee.toFixed(2)}`;
+            document.getElementById('cart-grand-total').innerText = `GH₵ ${grandTotal.toFixed(2)}`;
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) { alert('Your cart is empty.'); return; }
+            const name = document.getElementById('customer-name').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            if (!name || !address) { alert('Please enter your full name and delivery address.'); return; }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliverySelect = document.getElementById('delivery-location');
+            const deliveryFee = parseFloat(deliverySelect.value);
+            const deliveryLocationName = deliverySelect.options[deliverySelect.selectedIndex].text;
+            const grandTotal = subtotal + deliveryFee;
+
+            let message = `🛒 *NEW ORDER - FOCUSED WISE VENTURES*\n\n👤 *Customer:* ${name}\n📍 *Address:* ${address}\n🚚 *Zone:* ${deliveryLocationName}\n\n📦 *Items:*\n`;
+            cart.forEach((item, index) => { message += `${index + 1}. ${item.name} (${item.quantity}x) - GH₵ ${(item.price * item.quantity).toFixed(2)}\n`; });
+            message += `\n🔹 *Subtotal:* GH₵ ${subtotal.toFixed(2)}\n🔹 *Delivery:* GH₵ ${deliveryFee.toFixed(2)}\n💰 *Total:* GH₵ ${grandTotal.toFixed(2)}`;
+
+            window.open(`https://wa.me/97333481914?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function calculateMoMo() {
+            const amount = parseFloat(document.getElementById('momo-amount').value) || 0;
+            const type = document.getElementById('momo-type').value;
+            let fee = amount > 0 ? (type === 'transfer' ? (amount <= 100 ? amount * 0.0075 : Math.max(1.00, amount * 0.01)) : (type === 'cashout' ? amount * 0.01 : amount * 0.005)) : 0;
+            document.getElementById('momo-fee-result').innerText = `GH₵ ${fee.toFixed(2)}`;
+            document.getElementById('momo-total-result').innerText = `GH₵ ${(amount + fee).toFixed(2)}`;
+        }
+
+        function toggleAdminModal() { document.getElementById('admin-modal').classList.toggle('hidden'); }
+
+        function verifyAdmin() {
+            const inputPass = document.getElementById('admin-passcode').value;
+            if (inputPass === '@Wisekofi01') {
+                document.getElementById('admin-auth-container').classList.add('hidden');
+                document.getElementById('admin-panel-content').classList.remove('hidden');
+                renderAdminProductList();
+            } else { alert('Incorrect passcode.'); }
+        }
+
+        function addNewProduct() {
+            const name = document.getElementById('new-prod-name').value.trim();
+            const category = document.getElementById('new-prod-cat').value;
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const stock = document.getElementById('new-prod-stock').value;
+            const unit = document.getElementById('new-prod-unit').value.trim() || 'piece';
+            const image = document.getElementById('new-prod-img').value.trim();
+
+            if (!name || isNaN(price)) { alert('Enter valid product name and price.'); return; }
+            products.push({ id: 'p_' + Date.now(), name, category, price, stock, unit, image });
+            localStorage.setItem('fwv_products', JSON.stringify(products));
+            renderCatalog();
+            renderAdminProductList();
+            document.getElementById('new-prod-name').value = '';
+            document.getElementById('new-prod-price').value = '';
+            document.getElementById('new-prod-unit').value = '';
+            document.getElementById('new-prod-img').value = '';
+            alert('Product added successfully!');
+        }
+
+        function renderAdminProductList() {
+            const listContainer = document.getElementById('admin-product-list');
+            listContainer.innerHTML = '';
+            products.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'bg-navy-800 p-3 rounded-lg border border-navy-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-sm';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-white">${p.name}</p>
+                        <p class="text-xs text-teal-400">GH₵ ${p.price.toFixed(2)} (${p.stock})</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="img-input-${p.id}" placeholder="Paste ImgBB link" class="bg-navy-900 border border-navy-600 rounded px-2 py-1 text-xs text-white flex-grow sm:w-40">
+                        <button onclick="updateProductImage('${p.id}')" class="bg-teal-600 hover:bg-teal-500 text-white px-2.5 py-1 rounded text-xs transition">Add Img</button>
+                        <button onclick="deleteProduct('${p.id}')" class="bg-rose-500/20 hover:bg-rose-500 text-rose-400 hover:text-white px-2.5 py-1 rounded text-xs transition">Del</button>
+                    </div>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        function updateProductImage(productId) {
+            const inputVal = document.getElementById(`img-input-${productId}`).value.trim();
+            if (!inputVal) {
+                alert('Please paste a valid image link first.');
+                return;
+            }
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                product.image = inputVal;
+                localStorage.setItem('fwv_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminProductList();
+                alert('Product image updated successfully!');
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Delete this product?')) {
+                products = products.filter(p => p.id !== productId);
+                localStorage.setItem('fwv_products', JSON.stringify(products));
+                renderCatalog();
+                renderAdminProductList();
+            }
+        }
+    </script>
+</body>
+</html>
