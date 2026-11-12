@@ -1,0 +1,15 @@
+{
+  "name": "Focused Wise Ventures",
+  "short_name": "FocusedWise",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0B1325",
+  "theme_color": "#0D9488",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
