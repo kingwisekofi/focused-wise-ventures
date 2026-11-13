@@ -397,21 +397,23 @@
             { id: 'p10', name: 'Fast Document Printing & Lamination', category: 'general', price: 3, stock: 'in-stock', unit: 'page', image: '' }
         ];
 
-        let products = JSON.parse(localStorage.getItem('fwv_products')) || fallbackProducts;
+        // Safe Initialization: Forces fallback products if local storage is empty or broken
+        let storedData = JSON.parse(localStorage.getItem('fwv_products'));
+        let products = (Array.isArray(storedData) && storedData.length > 0) ? storedData : fallbackProducts;
+        
         let cart = [];
         let currentFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
             updateCartUI();
             calculateMoMo();
-            renderCatalog(); // Renders instantly using local storage/fallback so it never gets stuck
-            await loadProductsFromCloud(); // Silently updates from cloud in the background
+            renderCatalog(); // Renders instantly on load
+            await loadProductsFromCloud(); // Background cloud sync
         });
 
         async function loadProductsFromCloud() {
-            const statusBadge = styleStatusBadge('syncing');
+            const statusBadge = document.getElementById('cloud-status-badge');
             try {
-                // Add a 4-second timeout so it never hangs indefinitely
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 4000);
 
@@ -423,24 +425,16 @@
 
                 if (!response.ok) throw new Error('Cloud fetch failed');
                 const data = await response.json();
-                if (data && Array.isArray(data.record)) {
+                if (data && Array.isArray(data.record) && data.record.length > 0) {
                     products = data.record;
                     localStorage.setItem('fwv_products', JSON.stringify(products));
                     renderCatalog();
-                    styleStatusBadge('success');
+                    if (statusBadge) statusBadge.innerText = '● Live Synced';
                 }
             } catch (err) {
-                console.log('Using local/cached products mode');
-                styleStatusBadge('offline');
+                console.log('Using local store mode');
+                if (statusBadge) statusBadge.innerText = '● Store Active';
             }
-        }
-
-        function styleStatusBadge(state) {
-            const badge = document.getElementById('cloud-status-badge');
-            if(!badge) return;
-            if(state === 'success') badge.innerText = '● Live Synced';
-            if(state === 'syncing') badge.innerText = 'Syncing...';
-            if(state === 'offline') badge.innerText = '● Store Active';
         }
 
         async function syncProductsToCloud() {
@@ -463,8 +457,8 @@
                 return true;
             } catch (err) {
                 console.error(err);
-                if (adminStatus) adminStatus.innerText = 'Saved locally (Check network)';
-                return true; // Still returns true so local admin works seamlessly
+                if (adminStatus) adminStatus.innerText = 'Saved locally!';
+                return true;
             }
         }
 
