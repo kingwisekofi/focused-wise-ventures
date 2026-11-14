@@ -184,13 +184,13 @@
                     </div>
 
                     <!-- Cart Items List -->
-                    <div id="cart-items-container" class="max-h-72 overflow-y-auto p-5 space-y-4 divide-y divide-navy-700/50"></div>
+                    <div id="cart-items-container" class="max-h-60 overflow-y-auto p-5 space-y-4 divide-y divide-navy-700/50"></div>
 
                     <!-- Cart Totals & Checkout Form -->
-                    <div class="p-5 bg-navy-900 border-t border-navy-700 space-y-4">
+                    <div class="p-5 bg-navy-900 border-t border-navy-700 space-y-3">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Select Delivery Location / Hub</label>
-                            <select id="delivery-location" onchange="updateCartTotals()" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-teal-500 transition">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">Select Delivery Location / Hub</label>
+                            <select id="delivery-location" onchange="updateCartTotals()" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-teal-500 transition">
                                 <option value="0">Store Pickup / Gbetsiley Direct (GH₵ 0.00)</option>
                                 <option value="15">Ashaiman Environs (GH₵ 15.00)</option>
                                 <option value="25">Tema Central & Community Areas (GH₵ 25.00)</option>
@@ -199,7 +199,19 @@
                             </select>
                         </div>
 
-                        <div class="space-y-1.5 text-sm pt-2 border-t border-navy-800">
+                        <!-- Delivery Availability / Time Slot Selector -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">When to Receive Order?</label>
+                            <select id="delivery-availability" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-teal-500 transition">
+                                <option value="As soon as possible (Express)">⚡ As soon as possible (Express)</option>
+                                <option value="Morning Delivery (8:00 AM - 12:00 PM)">🌅 Morning (8:00 AM - 12:00 PM)</option>
+                                <option value="Afternoon Delivery (1:00 PM - 5:00 PM)">☀️ Afternoon (1:00 PM - 5:00 PM)</option>
+                                <option value="Evening Delivery (5:00 PM - 8:00 PM)">🌙 Evening (5:00 PM - 8:00 PM)</option>
+                                <option value="Scheduled for Tomorrow">📅 Scheduled for Tomorrow</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1 text-sm pt-1 border-t border-navy-800">
                             <div class="flex justify-between text-gray-300">
                                 <span>Subtotal</span>
                                 <span id="cart-subtotal" class="font-semibold text-white">GH₵ 0.00</span>
@@ -208,20 +220,20 @@
                                 <span>Delivery Fee</span>
                                 <span id="cart-delivery-fee" class="font-semibold text-white">GH₵ 0.00</span>
                             </div>
-                            <div class="flex justify-between text-base font-extrabold text-white pt-2 border-t border-navy-700">
+                            <div class="flex justify-between text-base font-extrabold text-white pt-1 border-t border-navy-700">
                                 <span>Grand Total</span>
                                 <span id="cart-grand-total" class="text-teal-400">GH₵ 0.00</span>
                             </div>
                         </div>
 
-                        <div class="space-y-2.5 pt-2">
-                            <input type="text" id="customer-name" placeholder="Your Full Name" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition">
+                        <div class="space-y-2 pt-1">
+                            <input type="text" id="customer-name" placeholder="Your Full Name" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-teal-500 transition">
                             
                             <!-- Delivery Address with GPS Button -->
                             <div class="space-y-1">
                                 <div class="flex gap-2">
-                                    <input type="text" id="customer-address" placeholder="Delivery Address / Landmark" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition">
-                                    <button type="button" onclick="getGPSLocation()" title="Use GPS Location" class="bg-teal-600 hover:bg-teal-500 text-white px-3.5 rounded-xl font-bold flex items-center justify-center transition shrink-0" id="gps-btn">
+                                    <input type="text" id="customer-address" placeholder="Delivery Address / Landmark" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-teal-500 transition">
+                                    <button type="button" onclick="getGPSLocation()" title="Use GPS Location" class="bg-teal-600 hover:bg-teal-500 text-white px-3 rounded-xl font-bold flex items-center justify-center transition shrink-0" id="gps-btn">
                                         📍 <span class="hidden sm:inline ml-1 text-xs">GPS</span>
                                     </button>
                                 </div>
@@ -229,9 +241,8 @@
                             </div>
                         </div>
 
-                        <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                            <span>Send Order via WhatsApp</span>
+                        <button onclick="openReceiptModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition">
+                            <span>📄 Review Itemized Receipt</span>
                         </button>
                     </div>
 
@@ -290,8 +301,92 @@
 
     </main>
 
+    <!-- Review Itemized Receipt & Follow-Up Modal -->
+    <div id="receipt-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="fixed inset-0 bg-black/85 backdrop-blur-sm transition-opacity" onclick="closeReceiptModal()"></div>
+        <div class="flex items-center justify-center min-h-screen p-4 relative z-10">
+            <div class="bg-navy-950 border border-amber-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-gray-100">
+                
+                <!-- Receipt Header Badge -->
+                <div class="text-center pb-5 border-b border-navy-800 relative">
+                    <button onclick="closeReceiptModal()" class="absolute right-0 top-0 text-gray-400 hover:text-white p-2 rounded-lg bg-navy-900 transition">✕</button>
+                    <span class="inline-block bg-amber-500/20 text-amber-400 text-xs font-extrabold px-3.5 py-1.5 rounded-full border border-amber-500/30 mb-3 uppercase tracking-wider">
+                        📄 Review Itemized Receipt
+                    </span>
+                    <h3 class="text-xl sm:text-2xl font-extrabold tracking-wide uppercase text-white">FOCUSED WISE VENTURES</h3>
+                    <p class="text-xs text-teal-400 mt-1 font-medium">Order Draft <span id="receipt-draft-id" class="font-mono font-bold"></span></p>
+                </div>
+
+                <!-- Customer Details Summary -->
+                <div class="py-4 space-y-2 text-xs sm:text-sm border-b border-navy-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Customer:</span>
+                        <span id="receipt-customer-name" class="font-bold text-white"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Delivery Zone:</span>
+                        <span id="receipt-zone" class="font-medium text-teal-400 text-right"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Address / GPS:</span>
+                        <span id="receipt-address" class="font-medium text-white text-right max-w-[220px] truncate"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Availability:</span>
+                        <span id="receipt-availability" class="font-medium text-amber-400 text-right"></span>
+                    </div>
+                </div>
+
+                <!-- Itemized Breakdown -->
+                <div class="py-4 border-b border-navy-800">
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Itemized Order Breakdown</p>
+                    <div id="receipt-items-list" class="space-y-2.5 max-h-44 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Totals Summary -->
+                <div class="py-4 space-y-2 text-sm border-b border-navy-800">
+                    <div class="flex justify-between text-gray-300">
+                        <span>Subtotal</span>
+                        <span id="receipt-subtotal" class="font-semibold text-white">GH₵ 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-300">
+                        <span>Delivery Fee</span>
+                        <span id="receipt-delivery-fee" class="font-semibold text-white">GH₵ 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-extrabold text-white pt-2 border-t border-navy-800">
+                        <span>TOTAL PAYABLE</span>
+                        <span id="receipt-grand-total" class="text-amber-400 font-mono">GH₵ 0.00</span>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-center text-gray-400 py-3">Payment Method: Cash on Delivery or Mobile Money</p>
+
+                <!-- Action Buttons: Follow up, Call, Confirm -->
+                <div class="space-y-2.5 pt-2">
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <a href="tel:97333481914" class="bg-navy-900 hover:bg-navy-800 border border-navy-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+                            <span>📞 Call Support</span>
+                        </a>
+                        <a href="https://wa.me/97333481914?text=Hello%20Focused%2C%20I%20would%20like%20to%20send%20a%20follow-up%20message%20regarding%20my%20order." target="_blank" class="bg-navy-900 hover:bg-navy-800 border border-teal-500/30 text-teal-400 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+                            <span>💬 Send Follow-Up</span>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button onclick="closeReceiptModal()" class="bg-rose-950/40 hover:bg-rose-900/50 border border-rose-500/30 text-rose-300 font-bold py-3 rounded-xl text-xs transition">
+                            Cancel / Edit
+                        </button>
+                        <button onclick="confirmOrderWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg flex items-center justify-center space-x-1.5 transition">
+                            <span>✓ Confirm & Send Order</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Quick WhatsApp Inquiry Button -->
-    <a href="https://wa.me/97333481914?text=Hello%20Focused%20Wise%20Ventures%2C%20I%20would%20like%20to%20make%20an%20inquiry." target="_blank" title="Chat with us on WhatsApp" class="fixed bottom-6 right-5 z-30 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl border border-emerald-400/30 flex items-center justify-center transition transform hover:scale-105">
+    <a href="https://wa.me/97333481914?text=Hello%20Focused%2C%20I%20would%20like%20to%20make%20an%20order" target="_blank" title="Chat with us on WhatsApp" class="fixed bottom-6 right-5 z-30 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl border border-emerald-400/30 flex items-center justify-center transition transform hover:scale-105">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
     </a>
 
@@ -391,12 +486,10 @@
             { id: 'p10', name: 'Fast Document Printing & Lamination', category: 'general', price: 3, stock: 'in-stock', unit: 'page', image: '' }
         ];
 
-        // Guaranteed immediate initialization
         let products = fallbackProducts;
         let cart = [];
         let currentFilter = 'all';
 
-        // Load safely right away
         document.addEventListener('DOMContentLoaded', () => {
             const cached = localStorage.getItem('fwv_products');
             if (cached) {
@@ -410,9 +503,7 @@
             
             updateCartUI();
             calculateMoMo();
-            renderCatalog(); // Renders products immediately
-            
-            // Try fetching latest cloud data in background
+            renderCatalog();
             fetchCloudProducts();
         });
 
@@ -563,10 +654,6 @@
             document.getElementById('cart-badge').innerText = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
             document.getElementById('cart-badge-mobile').innerText = totalCount;
             
-            const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
-            const deliveryFee = parseFloat(document.getElementById('delivery-location').value);
-            const grandTotal = subtotal + deliveryFee;
-
             renderCartItems();
         }
 
@@ -644,23 +731,67 @@
             );
         }
 
-        function checkoutWhatsApp() {
+        function openReceiptModal() {
             if (cart.length === 0) { alert('Your cart is empty.'); return; }
             const name = document.getElementById('customer-name').value.trim();
             const address = document.getElementById('customer-address').value.trim();
             if (!name || !address) { alert('Please enter your full name and delivery address or use GPS.'); return; }
 
+            // Populate Receipt Modal
+            const draftId = 'FWV-' + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('receipt-draft-id').innerText = '#' + draftId;
+            document.getElementById('receipt-customer-name').innerText = name;
+            document.getElementById('receipt-address').innerText = address;
+            
+            const deliverySelect = document.getElementById('delivery-location');
+            const deliveryFee = parseFloat(deliverySelect.value);
+            document.getElementById('receipt-zone').innerText = deliverySelect.options[deliverySelect.selectedIndex].text;
+            document.getElementById('receipt-availability').innerText = document.getElementById('delivery-availability').value;
+
+            const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+            const grandTotal = subtotal + deliveryFee;
+
+            document.getElementById('receipt-subtotal').innerText = `GH₵ ${subtotal.toFixed(2)}`;
+            document.getElementById('receipt-delivery-fee').innerText = `GH₵ ${deliveryFee.toFixed(2)}`;
+            document.getElementById('receipt-grand-total').innerText = `GH₵ ${grandTotal.toFixed(2)}`;
+
+            // Render Itemized breakdown list
+            const itemListContainer = document.getElementById('receipt-items-list');
+            itemListContainer.innerHTML = '';
+            cart.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center text-xs';
+                row.innerHTML = `
+                    <span class="text-gray-300">#0${index + 1} ${item.name} × ${item.quantity}</span>
+                    <span class="font-bold text-white">GH₵ ${(Number(item.price) * item.quantity).toFixed(2)}</span>
+                `;
+                itemListContainer.appendChild(row);
+            });
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        function confirmOrderWhatsApp() {
+            const name = document.getElementById('customer-name').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
             const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
             const deliverySelect = document.getElementById('delivery-location');
             const deliveryFee = parseFloat(deliverySelect.value);
             const deliveryLocationName = deliverySelect.options[deliverySelect.selectedIndex].text;
+            const availability = document.getElementById('delivery-availability').value;
             const grandTotal = subtotal + deliveryFee;
+            const draftId = document.getElementById('receipt-draft-id').innerText;
 
-            let message = `🛒 *NEW ORDER - FOCUSED WISE VENTURES*\n\n👤 *Customer:* ${name}\n📍 *Address/GPS:* ${address}\n🚚 *Zone:* ${deliveryLocationName}\n\n📦 *Items:*\n`;
-            cart.forEach((item, index) => { message += `${index + 1}. ${item.name} (${item.quantity}x) - GH₵ ${(Number(item.price) * item.quantity).toFixed(2)}\n`; });
-            message += `\n🔹 *Subtotal:* GH₵ ${subtotal.toFixed(2)}\n🔹 *Delivery:* GH₵ ${deliveryFee.toFixed(2)}\n💰 *Total:* GH₵ ${grandTotal.toFixed(2)}`;
+            let message = `Hello Focused, I would like to make an order\n\n*NEW ORDER - FOCUSED WISE VENTURES* (${draftId})\n\n👤 *Customer:* ${name}\n📍 *Address/GPS:* ${address}\n🚚 *Zone:* ${deliveryLocationName}\n⏰ *Availability:* ${availability}\n\n📦 *Itemized Order Breakdown:*\n`;
+            cart.forEach((item, index) => { message += `#0${index + 1} ${item.name} (${item.quantity}x) - GH₵ ${(Number(item.price) * item.quantity).toFixed(2)}\n`; });
+            message += `\n🔹 *Subtotal:* GH₵ ${subtotal.toFixed(2)}\n🔹 *Delivery Fee:* GH₵ ${deliveryFee.toFixed(2)}\n💰 *TOTAL PAYABLE:* GH₵ ${grandTotal.toFixed(2)}`;
 
             window.open(`https://wa.me/97333481914?text=${encodeURIComponent(message)}`, '_blank');
+            closeReceiptModal();
         }
 
         function calculateMoMo() {
