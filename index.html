@@ -649,6 +649,11 @@
             updateCartUI();
         }
 
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            updateCartUI();
+        }
+
         function updateCartUI() {
             const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cart-badge').innerText = `${totalCount} item${totalCount === 1 ? '' : 's'}`;
@@ -667,13 +672,16 @@
             }
             cart.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'pt-3 first:pt-0 flex items-center justify-between';
+                div.className = 'pt-3 first:pt-0 flex items-center justify-between gap-2';
                 div.innerHTML = `
-                    <div class="pr-2">
-                        <h4 class="font-bold text-white text-xs sm:text-sm">${item.name}</h4>
+                    <div class="pr-1 flex-grow">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-xs sm:text-sm">${item.name}</h4>
+                            <button onclick="removeFromCart('${item.id}')" title="Remove Item" class="text-rose-400 hover:text-rose-300 p-1 rounded transition text-xs font-bold">✕</button>
+                        </div>
                         <p class="text-[11px] text-teal-400 font-semibold mt-0.5">GH₵ ${Number(item.price).toFixed(2)} x ${item.quantity}</p>
                     </div>
-                    <div class="flex items-center space-x-1.5 shrink-0">
+                    <div class="flex items-center space-x-1 shrink-0">
                         <button onclick="updateQuantity('${item.id}', -1)" class="w-6 h-6 bg-navy-700 hover:bg-navy-600 rounded text-white font-bold flex items-center justify-center text-xs">-</button>
                         <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
                         <button onclick="updateQuantity('${item.id}', 1)" class="w-6 h-6 bg-navy-700 hover:bg-navy-600 rounded text-white font-bold flex items-center justify-center text-xs">+</button>
