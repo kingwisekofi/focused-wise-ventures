@@ -38,7 +38,7 @@
 </head>
 <body class="bg-navy-900 text-gray-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Lock Screen Overlay -->
+    <!-- Role-Based Staff / Admin Lock Screen -->
     <div id="pos-lock-screen" class="fixed inset-0 z-50 bg-navy-950 flex items-center justify-center p-4">
         <div class="bg-navy-800 border border-navy-700 rounded-3xl max-w-md w-full p-8 shadow-2xl text-center space-y-5">
             <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Logo" class="w-16 h-16 rounded-2xl mx-auto object-cover border border-teal-400/40">
@@ -46,9 +46,20 @@
                 <h1 class="text-xl font-extrabold text-white uppercase tracking-wide">Focused Wise Ventures</h1>
                 <p class="text-xs text-teal-400 font-semibold uppercase tracking-widest mt-1">Counter POS & Sales Terminal</p>
             </div>
-            <input type="password" id="pos-passcode" onkeyup="if(event.key==='Enter') unlockPOS()" placeholder="Enter Staff / Admin Passcode" class="w-full bg-navy-900 border border-navy-600 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-teal-500">
-            <button onclick="unlockPOS()" class="w-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-extrabold py-3 rounded-xl shadow-lg transition">Open POS Terminal</button>
-            <a href="index.html" class="block text-xs text-gray-400 hover:text-teal-400 pt-2">← Back to Customer Storefront</a>
+
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1">Staff / Attendant Name</label>
+                    <input type="text" id="pos-staff-name" placeholder="e.g. Kwame / Sales Attendant" class="w-full bg-navy-900 border border-navy-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1">Staff PIN or Admin Passcode</label>
+                    <input type="password" id="pos-passcode" onkeyup="if(event.key==='Enter') unlockPOS()" placeholder="Enter Cashier PIN (2026) or Admin Passcode" class="w-full bg-navy-900 border border-navy-600 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-teal-500">
+                </div>
+            </div>
+
+            <button onclick="unlockPOS()" class="w-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-extrabold py-3 rounded-xl shadow-lg transition">Clock In & Open POS</button>
+            <a href="index.html" class="block text-xs text-gray-400 hover:text-teal-400 pt-1">← Back to Customer Storefront</a>
         </div>
     </div>
 
@@ -59,7 +70,7 @@
                 <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-teal-400/40">
                 <div>
                     <h1 class="text-sm sm:text-base font-extrabold text-white uppercase">FWV <span class="text-teal-400">POS TERMINAL</span></h1>
-                    <p id="sync-indicator" class="text-[10px] text-teal-400 font-medium">● Connected to Live Store</p>
+                    <p id="active-staff-badge" class="text-[10px] text-teal-400 font-medium">● Logged in</p>
                 </div>
             </div>
 
@@ -71,7 +82,7 @@
 
             <div class="flex items-center space-x-2">
                 <a href="index.html" target="_blank" class="hidden sm:inline-block text-xs bg-navy-800 hover:bg-navy-700 border border-navy-700 px-3 py-2 rounded-lg text-gray-300">Storefront ↗</a>
-                <button onclick="lockPOS()" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-2 rounded-lg font-semibold transition">Lock</button>
+                <button onclick="lockPOS()" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-2 rounded-lg font-semibold transition">Clock Out</button>
             </div>
         </div>
     </header>
@@ -82,7 +93,6 @@
 
             <!-- Left: Quick Item Tap Grid & Custom Entry -->
             <div class="lg:col-span-7 space-y-4">
-                <!-- Search & Category Filter -->
                 <div class="bg-navy-800 border border-navy-700 p-4 rounded-2xl space-y-3">
                     <div class="flex flex-col sm:flex-row gap-3">
                         <input type="text" id="pos-search" onkeyup="renderPOSGrid()" placeholder="Search product or scan name..." class="flex-grow bg-navy-900 border border-navy-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500">
@@ -219,6 +229,7 @@
                         <tr class="bg-navy-950 border-b border-navy-700 text-[11px] uppercase text-gray-400">
                             <th class="py-3.5 px-4">Receipt #</th>
                             <th class="py-3.5 px-4">Date & Time</th>
+                            <th class="py-3.5 px-4">Staff</th>
                             <th class="py-3.5 px-4">Customer</th>
                             <th class="py-3.5 px-4">Items Sold</th>
                             <th class="py-3.5 px-4">Method</th>
@@ -278,6 +289,10 @@
         const JSONBIN_BIN_ID = '6af6a0fbffd5d16053bdde2c';
         const JSONBIN_API_KEY = '$2a$10$EQueRDn8UeTLOAxC80QQXO0jpKomw6CVVJNKNvtXamS13ZQqaClpe';
 
+        // LOGIN CREDENTIALS
+        const ADMIN_PASSCODE = '@Wisekofi01'; // Full access (can void sales)
+        const CASHIER_PIN = '2026';          // Salesperson PIN (cannot void sales)
+
         let products = [];
         let ticket = [];
         let salesHistory = JSON.parse(localStorage.getItem('fwv_sales_ledger') || '[]');
@@ -285,24 +300,51 @@
         let posFilter = 'all';
         let lastCompletedSale = null;
 
-        // Auth Check
-        if (sessionStorage.getItem('fwv_pos_unlocked') === 'true') {
+        let currentRole = sessionStorage.getItem('fwv_pos_role') || null;
+        let currentStaff = sessionStorage.getItem('fwv_pos_staff') || 'Sales Attendant';
+
+        if (currentRole) {
             document.getElementById('pos-lock-screen').classList.add('hidden');
+            updateStaffHeader();
         }
 
         function unlockPOS() {
+            const staffInput = document.getElementById('pos-staff-name').value.trim();
             const pass = document.getElementById('pos-passcode').value;
-            if (pass === '@Wisekofi01') {
-                sessionStorage.setItem('fwv_pos_unlocked', 'true');
-                document.getElementById('pos-lock-screen').classList.add('hidden');
-                document.getElementById('pos-passcode').value = '';
+
+            if (pass === ADMIN_PASSCODE) {
+                currentRole = 'admin';
+                currentStaff = staffInput || 'Admin (Wisdom)';
+            } else if (pass === CASHIER_PIN) {
+                if (!staffInput) {
+                    alert('Please enter your name before clocking in.');
+                    return;
+                }
+                currentRole = 'cashier';
+                currentStaff = staffInput;
             } else {
-                alert('Incorrect passcode.');
+                alert('Incorrect PIN or Passcode.');
+                return;
             }
+
+            sessionStorage.setItem('fwv_pos_role', currentRole);
+            sessionStorage.setItem('fwv_pos_staff', currentStaff);
+            document.getElementById('pos-lock-screen').classList.add('hidden');
+            document.getElementById('pos-passcode').value = '';
+            updateStaffHeader();
+            renderLedger();
+        }
+
+        function updateStaffHeader() {
+            const badge = document.getElementById('active-staff-badge');
+            const roleLabel = currentRole === 'admin' ? 'ADMIN' : 'CASHIER';
+            badge.innerText = `● ${currentStaff} (${roleLabel})`;
         }
 
         function lockPOS() {
-            sessionStorage.removeItem('fwv_pos_unlocked');
+            sessionStorage.removeItem('fwv_pos_role');
+            sessionStorage.removeItem('fwv_pos_staff');
+            currentRole = null;
             document.getElementById('pos-lock-screen').classList.remove('hidden');
         }
 
@@ -332,9 +374,7 @@
                         renderPOSGrid();
                     }
                 }
-            } catch (e) {
-                document.getElementById('sync-indicator').innerText = '● Offline / Local Cache Mode';
-            }
+            } catch (e) {}
         }
 
         function switchView(view) {
@@ -513,6 +553,7 @@
                 id: receiptId,
                 date: now.toISOString().split('T')[0],
                 time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                staff: currentStaff,
                 customer,
                 items: [...ticket],
                 subtotal,
@@ -525,8 +566,7 @@
             localStorage.setItem('fwv_sales_ledger', JSON.stringify(salesHistory));
             lastCompletedSale = saleRecord;
 
-            // Show Receipt Modal
-            document.getElementById('rec-meta').innerText = `${saleRecord.id} • ${saleRecord.date} ${saleRecord.time} • ${saleRecord.customer}`;
+            document.getElementById('rec-meta').innerText = `${saleRecord.id} • ${saleRecord.date} ${saleRecord.time} • Served by: ${saleRecord.staff}`;
             document.getElementById('rec-method').innerText = saleRecord.method;
             document.getElementById('rec-total').innerText = `GH₵ ${saleRecord.total.toFixed(2)}`;
             
@@ -551,7 +591,7 @@
         function shareReceiptWhatsApp() {
             if (!lastCompletedSale) return;
             const s = lastCompletedSale;
-            let text = `*FOCUSED WISE VENTURES - RECEIPT*\nReceipt: ${s.id}\nDate: ${s.date} ${s.time}\nCustomer: ${s.customer}\n\n`;
+            let text = `*FOCUSED WISE VENTURES - RECEIPT*\nReceipt: ${s.id}\nDate: ${s.date} ${s.time}\nServed By: ${s.staff}\nCustomer: ${s.customer}\n\n`;
             s.items.forEach(i => { text += `• ${i.name} (${i.qty}x) - GH₵ ${(i.price * i.qty).toFixed(2)}\n`; });
             if (s.discount > 0) text += `Discount: -GH₵ ${s.discount.toFixed(2)}\n`;
             text += `\n*TOTAL PAID (${s.method}): GH₵ ${s.total.toFixed(2)}*\nThank you for shopping with us!`;
@@ -562,7 +602,6 @@
             const filterDate = document.getElementById('ledger-date-filter').value;
             const todayStr = new Date().toISOString().split('T')[0];
 
-            // Compute Today's KPIs
             const todaySales = salesHistory.filter(s => s.date === todayStr);
             const todayTotal = todaySales.reduce((sum, s) => sum + s.total, 0);
             const cashTotal = todaySales.filter(s => s.method === 'Cash').reduce((sum, s) => sum + s.total, 0);
@@ -575,37 +614,40 @@
             document.getElementById('kpi-momo-total').innerText = `GH₵ ${momoTotal.toFixed(2)}`;
             document.getElementById('kpi-credit-total').innerText = `GH₵ ${creditTotal.toFixed(2)}`;
 
-            // Render Table
             const tbody = document.getElementById('ledger-table-body');
             tbody.innerHTML = '';
 
             const displayList = filterDate ? salesHistory.filter(s => s.date === filterDate) : salesHistory;
 
             if (displayList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-400">No sales recorded for this period.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-gray-400">No sales recorded for this period.</td></tr>`;
                 return;
             }
 
             displayList.forEach(s => {
                 const itemsSummary = s.items.map(i => `${i.name} (${i.qty})`).join(', ');
+                const actionHtml = currentRole === 'admin' 
+                    ? `<button onclick="deleteSaleRecord('${s.id}')" class="text-rose-400 hover:text-rose-300 font-bold">Void</button>`
+                    : `<span class="text-gray-500 text-[10px]">Locked</span>`;
+
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-navy-900/50 transition';
                 tr.innerHTML = `
                     <td class="py-3 px-4 font-mono text-teal-400 font-bold">${s.id}</td>
                     <td class="py-3 px-4 text-gray-300">${s.date} <span class="text-gray-500">${s.time}</span></td>
+                    <td class="py-3 px-4 text-gray-300 font-medium">${s.staff || 'Staff'}</td>
                     <td class="py-3 px-4 font-semibold text-white">${s.customer}</td>
                     <td class="py-3 px-4 text-gray-300 max-w-xs truncate" title="${itemsSummary}">${itemsSummary}</td>
                     <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-navy-900 border border-navy-600 text-teal-400">${s.method}</span></td>
                     <td class="py-3 px-4 text-right font-mono font-extrabold text-white">GH₵ ${s.total.toFixed(2)}</td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="deleteSaleRecord('${s.id}')" class="text-rose-400 hover:text-rose-300 font-bold">Void</button>
-                    </td>
+                    <td class="py-3 px-4 text-center">${actionHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         function deleteSaleRecord(id) {
+            if (currentRole !== 'admin') return;
             if (confirm('Void and delete this transaction record?')) {
                 salesHistory = salesHistory.filter(s => s.id !== id);
                 localStorage.setItem('fwv_sales_ledger', JSON.stringify(salesHistory));
@@ -615,10 +657,10 @@
 
         function exportSalesCSV() {
             if (salesHistory.length === 0) { alert('No sales records to export.'); return; }
-            let csv = 'Receipt ID,Date,Time,Customer,Items,Payment Method,Subtotal,Discount,Total (GHS)\n';
+            let csv = 'Receipt ID,Date,Time,Staff,Customer,Items,Payment Method,Subtotal,Discount,Total (GHS)\n';
             salesHistory.forEach(s => {
                 const itemsStr = s.items.map(i => `${i.name} x${i.qty}`).join(' | ').replace(/,/g, '');
-                csv += `${s.id},${s.date},${s.time},"${s.customer}","${itemsStr}",${s.method},${s.subtotal.toFixed(2)},${s.discount.toFixed(2)},${s.total.toFixed(2)}\n`;
+                csv += `${s.id},${s.date},${s.time},"${s.staff || 'Staff'}","${s.customer}","${itemsStr}",${s.method},${s.subtotal.toFixed(2)},${s.discount.toFixed(2)},${s.total.toFixed(2)}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -636,7 +678,7 @@
             const momo = daySales.filter(s => s.method === 'MTN MoMo' || s.method === 'Telecel/AT').reduce((sum, s) => sum + s.total, 0);
             const credit = daySales.filter(s => s.method === 'Credit').reduce((sum, s) => sum + s.total, 0);
 
-            const msg = `*FOCUSED WISE VENTURES - DAILY CLOSING REPORT*\n📅 Date: ${dateStr}\n🧾 Total Transactions: ${daySales.length}\n\n💵 Cash Sales: GH₵ ${cash.toFixed(2)}\n📱 MoMo Sales: GH₵ ${momo.toFixed(2)}\n📝 Credit Sales: GH₵ ${credit.toFixed(2)}\n-------------------------\n💰 *GROSS REVENUE: GH₵ ${total.toFixed(2)}*`;
+            const msg = `*FOCUSED WISE VENTURES - DAILY CLOSING REPORT*\n📅 Date: ${dateStr}\n👤 Closed By: ${currentStaff}\n🧾 Total Transactions: ${daySales.length}\n\n💵 Cash Sales: GH₵ ${cash.toFixed(2)}\n📱 MoMo Sales: GH₵ ${momo.toFixed(2)}\n📝 Credit Sales: GH₵ ${credit.toFixed(2)}\n-------------------------\n💰 *GROSS REVENUE: GH₵ ${total.toFixed(2)}*`;
             window.open(`https://wa.me/97333481914?text=${encodeURIComponent(msg)}`, '_blank');
         }
     </script>
