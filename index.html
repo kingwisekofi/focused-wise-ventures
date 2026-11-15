@@ -240,7 +240,7 @@
     <div id="admin-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleAdminModal()"></div>
         <div class="flex items-center justify-center min-h-screen p-4 relative z-10">
-            <div class="bg-navy-800 border border-navy-700 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative">
+            <div class="bg-navy-800 border border-navy-700 rounded-2xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl relative">
                 <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-navy-700 mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-white">Live Cloud Store Manager</h3>
@@ -249,7 +249,7 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <a href="pos.html" target="_blank" class="text-xs bg-teal-500 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow">🧾 Open POS Terminal ↗</a>
                         
-                        <!-- Install App Button -->
+                        <!-- Install App Button (Hidden on non-supporting desktop browsers like desktop Firefox) -->
                         <button id="install-app-btn" onclick="installPWAApp()" class="hidden text-xs bg-amber-500 hover:bg-amber-400 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow transition">📱 Install App</button>
 
                         <a href="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" download="FWV_Logo.jpg" target="_blank" class="text-xs bg-navy-900 text-teal-400 border border-teal-500/30 font-bold px-3 py-1.5 rounded-lg">📥 Logo</a>
@@ -283,7 +283,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-center justify-between mb-2"><h4 class="text-sm font-bold text-gray-300 uppercase">Manage Inventory & Prices</h4><span id="admin-save-status" class="text-xs text-teal-400 font-semibold"></span></div>
+                        <div class="flex items-center justify-between mb-2"><h4 class="text-sm font-bold text-gray-300 uppercase">Manage Inventory, Names & Prices</h4><span id="admin-save-status" class="text-xs text-teal-400 font-semibold"></span></div>
                         <div id="admin-product-list" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
@@ -321,7 +321,7 @@
                     deferredPrompt = null;
                 });
             } else {
-                alert('To install, you can also use your browser menu (three dots in top right) and select "Install App" or "Add to Home screen".');
+                alert('To install, use your browser menu (three dots in top right) and select "Install App" or "Add to Home screen".');
             }
         }
 
@@ -597,14 +597,21 @@
             list.innerHTML = '';
             products.forEach(p => {
                 list.innerHTML += `
-                    <div class="bg-navy-900 p-3 rounded-xl border border-navy-700 space-y-2 text-xs">
-                        <div class="flex justify-between font-bold text-white"><span>${p.name}</span><button onclick="deleteProduct('${p.id}')" class="text-rose-400">Delete</button></div>
-                        <div class="grid grid-cols-4 gap-2">
-                            <div><label class="text-[9px] text-gray-400">Price</label><input type="number" id="adm-p-${p.id}" value="${p.price}" class="w-full bg-navy-800 rounded p-1 text-teal-400 font-bold"></div>
-                            <div><label class="text-[9px] text-gray-400">Stock Qty</label><input type="number" id="adm-q-${p.id}" value="${p.stockQty}" class="w-full bg-navy-800 rounded p-1 text-amber-400 font-bold"></div>
-                            <div><label class="text-[9px] text-gray-400">Image URL</label><input type="text" id="adm-i-${p.id}" value="${p.image || ''}" class="w-full bg-navy-800 rounded p-1 text-white"></div>
-                            <div class="pt-4"><button onclick="saveAdminProduct('${p.id}')" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-1 rounded">Save</button></div>
+                    <div class="bg-navy-900 p-3.5 rounded-xl border border-navy-700 space-y-2 text-xs">
+                        <div class="flex justify-between font-bold text-white items-center">
+                            <span class="text-teal-400 font-mono text-[10px]">ID: ${p.id}</span>
+                            <button onclick="deleteProduct('${p.id}')" class="text-rose-400 hover:underline">Delete Item</button>
                         </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-gray-400 uppercase">Product Name</label>
+                            <input type="text" id="adm-name-${p.id}" value="${p.name}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-white font-medium">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="text-[9px] text-gray-400 uppercase">Price (GH₵)</label><input type="number" id="adm-p-${p.id}" value="${p.price}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-teal-400 font-bold"></div>
+                            <div><label class="text-[9px] text-gray-400 uppercase">Stock Qty</label><input type="number" id="adm-q-${p.id}" value="${p.stockQty}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-amber-400 font-bold"></div>
+                            <div><label class="text-[9px] text-gray-400 uppercase">Image URL</label><input type="text" id="adm-i-${p.id}" value="${p.image || ''}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-white"></div>
+                        </div>
+                        <button onclick="saveAdminProduct('${p.id}')" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-lg mt-1 transition">Save Changes</button>
                     </div>
                 `;
             });
@@ -613,6 +620,8 @@
         async function saveAdminProduct(id) {
             let p = products.find(item => item.id === id);
             if (p) {
+                const newName = document.getElementById(`adm-name-${id}`).value.trim();
+                if (newName) p.name = newName;
                 p.price = parseFloat(document.getElementById(`adm-p-${id}`).value) || p.price;
                 p.stockQty = parseFloat(document.getElementById(`adm-q-${id}`).value) || 0;
                 p.image = document.getElementById(`adm-i-${id}`).value.trim();
