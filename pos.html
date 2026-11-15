@@ -17,6 +17,12 @@
             }
         }
     </script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+    </script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -54,6 +60,8 @@
                 <button onclick="switchView('ledger')" id="nav-ledger" class="px-4 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition">Sales Ledger & Reports</button>
             </div>
             <div class="flex items-center space-x-2">
+                <!-- Install App Button -->
+                <button id="install-app-btn" onclick="installPWAApp()" class="hidden text-xs bg-amber-500 hover:bg-amber-400 text-navy-950 font-extrabold px-3 py-2 rounded-lg shadow transition">📱 Install App</button>
                 <a href="index.html" target="_blank" class="hidden sm:inline-block text-xs bg-navy-800 hover:bg-navy-700 border border-navy-700 px-3 py-2 rounded-lg text-gray-300">Storefront ↗</a>
                 <button onclick="lockPOS()" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 px-3 py-2 rounded-lg font-semibold transition">Clock Out</button>
             </div>
@@ -166,6 +174,29 @@
     </div>
 
     <script>
+        // PWA App Installation Prompt Trigger for POS
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        function installPWAApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('install-app-btn').classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert('To install, use your browser menu (three dots in top right) and select "Install App" or "Add to Home screen".');
+            }
+        }
+
         const JSONBIN_BIN_ID = '6af6a0fbffd5d16053bdde2c';
         const JSONBIN_API_KEY = '$2a$10$EQueRDn8UeTLOAxC80QQXO0jpKomw6CVVJNKNvtXamS13ZQqaClpe';
         const ADMIN_PASSCODE = '@Wisekofi01';
@@ -430,7 +461,6 @@
             if (confirm('Void sale and restore stock?')) {
                 let sale = salesHistory.find(s => s.id === id);
                 if (sale) {
-                    // Restore stock back into inventory
                     sale.items.forEach(i => {
                         let p = products.find(prod => prod.id === i.id);
                         if (p) p.stockQty += i.qty;
