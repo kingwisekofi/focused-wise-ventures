@@ -1,15 +1,15 @@
 {
-  "name": "Focused Wise Ventures",
-  "short_name": "FocusedWise",
-  "start_url": "./index.html",
+  "name": "Focused Wise Ventures POS",
+  "short_name": "FWV POS",
+  "start_url": "pos.html",
   "display": "standalone",
   "background_color": "#0B1325",
-  "theme_color": "#0D9488",
+  "theme_color": "#14B8A6",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "src": "https://i.ibb.co/zVkpGmLM/LOGO2.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpeg"
     }
   ]
 }
