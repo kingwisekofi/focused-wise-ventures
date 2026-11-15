@@ -1,1 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focused Wise Ventures | Shop POS & Sales Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#070D19',
+                            900: '#0B1325',
+                            800: '#111C35',
+                            700: '#1B2A4A',
+                        },
+                        teal: {
+                            400: '#2DD4BF',
+                            500: '#14B8A6',
+                            600: '#0D9488',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-receipt, #printable-receipt * { visibility: visible; }
+            #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; background: white; color: black; padding: 20px; }
+        }
+    </style>
+</head>
+<body class="bg-navy-900 text-gray-100 min-h-screen flex flex-col font-sans">
 
+    <!-- Lock Screen Overlay -->
+    <div id="pos-lock-screen" class="fixed inset-0 z-50 bg-navy-950 flex items-center justify-center p-4">
+        <div class="bg-navy-800 border border-navy-700 rounded-3xl max-w-md w-full p-8 shadow-2xl text-center space-y-5">
+            <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Logo" class="w-16 h-16 rounded-2xl mx-auto object-cover border border-teal-400/40">
+            <div>
+                <h1 class="text-xl font-extrabold text-white uppercase tracking-wide">Focused Wise Ventures</h1>
+                <p class="text-xs text-teal-400 font-semibold uppercase tracking-widest mt-1">Counter POS & Sales Terminal</p>
+            </div>
+            <input type="password" id="pos-passcode" onkeyup="if(event.key==='Enter') unlockPOS()" placeholder="Enter Staff / Admin Passcode" class="w-full bg-navy-900 border border-navy-600 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-teal-500">
+            <button onclick="unlockPOS()" class="w-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-extrabold py-3 rounded-xl shadow-lg transition">Open POS Terminal</button>
+            <a href="index.html" class="block text-xs text-gray-400 hover:text-teal-400 pt-2">← Back to Customer Storefront</a>
+        </div>
+    </div>
+
+    <!-- Top POS Bar -->
+    <header class="bg-navy-950 border-b border-navy-800 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-teal-400/40">
+                <div>
+                    <h1 class="text-sm sm:text-base font-extrabold text-white uppercase">FWV <span class="text-teal-400">POS TERMINAL</span></h1>
+                    <p id="sync-indicator" class="text-[10px] text-teal-400 font-medium">● Connected to Live Store</p>
+                </div>
+            </div>
+
+            <!-- Mode Switcher Tabs -->
+            <div class="flex items-center bg-navy-900 p-1 rounded-xl border border-navy-800">
+                <button onclick="switchView('register')" id="nav-register" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-teal-500 text-navy-950 transition">Cash Register</button>
+                <button onclick="switchView('ledger')" id="nav-ledger" class="px-4 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition">Sales Ledger & Reports</button>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <a href="index.html" target="_blank" class="hidden sm:inline-block text-xs bg-navy-800 hover:bg-navy-700 border border-navy-700 px-3 py-2 rounded-lg text-gray-300">Storefront ↗</a>
+                <button onclick="lockPOS()" class="text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-2 rounded-lg font-semibold transition">Lock</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- VIEW 1: CASH REGISTER -->
+    <main id="view-register" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- Left: Quick Item Tap Grid & Custom Entry -->
+            <div class="lg:col-span-7 space-y-4">
+                <!-- Search & Category Filter -->
+                <div class="bg-navy-800 border border-navy-700 p-4 rounded-2xl space-y-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="pos-search" onkeyup="renderPOSGrid()" placeholder="Search product or scan name..." class="flex-grow bg-navy-900 border border-navy-600 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500">
+                        <button onclick="openCustomItemModal()" class="bg-navy-700 hover:bg-navy-600 text-teal-400 border border-teal-500/30 font-bold px-4 py-2.5 rounded-xl text-xs whitespace-nowrap transition">+ Custom / MoMo Fee</button>
+                    </div>
+                    <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+                        <button onclick="setPOSFilter('all')" id="pfilter-all" class="pos-cat px-3.5 py-1.5 rounded-lg text-xs font-bold bg-teal-500 text-navy-950">All</button>
+                        <button onclick="setPOSFilter('frozen')" id="pfilter-frozen" class="pos-cat px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-gray-300">❄️ Frozen</button>
+                        <button onclick="setPOSFilter('apparel')" id="pfilter-apparel" class="pos-cat px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-gray-300">👕 Apparel</button>
+                        <button onclick="setPOSFilter('general')" id="pfilter-general" class="pos-cat px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-gray-300">💼 General / MoMo</button>
+                    </div>
+                </div>
+
+                <!-- Product Tap Cards -->
+                <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            </div>
+
+            <!-- Right: Active Sale Ticket -->
+            <div class="lg:col-span-5 lg:sticky lg:top-20">
+                <div class="bg-navy-800 border border-navy-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+                    <div class="p-4 bg-navy-950 border-b border-navy-800 flex items-center justify-between">
+                        <div>
+                            <h2 class="font-bold text-white text-base">Current Sale Ticket</h2>
+                            <p id="ticket-number" class="text-[11px] text-teal-400 font-mono"></p>
+                        </div>
+                        <button onclick="clearTicket()" class="text-xs text-rose-400 hover:underline font-semibold">Clear All</button>
+                    </div>
+
+                    <!-- Ticket Items -->
+                    <div id="ticket-items" class="max-h-64 overflow-y-auto p-4 space-y-3 divide-y divide-navy-700/60"></div>
+
+                    <!-- Payment & Checkout Controls -->
+                    <div class="p-5 bg-navy-900 border-t border-navy-700 space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1">Customer (Optional)</label>
+                                <input type="text" id="pos-customer" placeholder="Walk-in Customer" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1">Discount (GH₵)</label>
+                                <input type="number" id="pos-discount" value="0" min="0" step="0.5" oninput="updateTicketTotals()" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-teal-500">
+                            </div>
+                        </div>
+
+                        <!-- Payment Method Selector -->
+                        <div>
+                            <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1.5">Payment Method</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button type="button" onclick="selectPayment('Cash')" id="pay-Cash" class="pay-btn bg-teal-500 text-navy-950 font-extrabold py-2 rounded-xl text-xs border border-teal-400 transition">💵 Cash</button>
+                                <button type="button" onclick="selectPayment('MTN MoMo')" id="pay-MTN MoMo" class="pay-btn bg-navy-800 text-gray-300 font-bold py-2 rounded-xl text-xs border border-navy-600 transition">📱 MTN</button>
+                                <button type="button" onclick="selectPayment('Telecel/AT')" id="pay-Telecel/AT" class="pay-btn bg-navy-800 text-gray-300 font-bold py-2 rounded-xl text-xs border border-navy-600 transition">📲 Telecel</button>
+                                <button type="button" onclick="selectPayment('Credit')" id="pay-Credit" class="pay-btn bg-navy-800 text-gray-300 font-bold py-2 rounded-xl text-xs border border-navy-600 transition">📝 Credit</button>
+                            </div>
+                        </div>
+
+                        <!-- Cash Tendered & Change Calculator -->
+                        <div id="cash-tender-box" class="grid grid-cols-2 gap-3 pt-1">
+                            <div>
+                                <label class="block text-[11px] uppercase text-gray-400 font-bold mb-1">Cash Received (GH₵)</label>
+                                <input type="number" id="cash-received" placeholder="0.00" oninput="updateTicketTotals()" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-teal-500">
+                            </div>
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-2 flex flex-col justify-center items-end">
+                                <span class="text-[10px] uppercase text-gray-400">Balance / Change</span>
+                                <span id="cash-change" class="text-sm font-extrabold text-amber-400 font-mono">GH₵ 0.00</span>
+                            </div>
+                        </div>
+
+                        <!-- Totals -->
+                        <div class="pt-2 border-t border-navy-700 space-y-1 text-sm">
+                            <div class="flex justify-between text-gray-400 text-xs">
+                                <span>Subtotal</span>
+                                <span id="pos-subtotal">GH₵ 0.00</span>
+                            </div>
+                            <div class="flex justify-between text-lg font-extrabold text-white">
+                                <span>TOTAL DUE</span>
+                                <span id="pos-total" class="text-teal-400 font-mono">GH₵ 0.00</span>
+                            </div>
+                        </div>
+
+                        <button onclick="completeSale()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold py-3.5 rounded-xl shadow-lg text-sm flex items-center justify-center space-x-2 transition">
+                            <span>✓ Complete & Record Sale</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW 2: SALES LEDGER & DAILY REPORTS -->
+    <main id="view-ledger" class="hidden flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <!-- Daily Summary KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-navy-800 border border-navy-700 p-5 rounded-2xl">
+                <p class="text-xs text-gray-400 uppercase font-semibold">Today's Total Sales</p>
+                <p id="kpi-today-total" class="text-2xl font-extrabold text-teal-400 mt-1 font-mono">GH₵ 0.00</p>
+                <p id="kpi-today-count" class="text-[11px] text-gray-400 mt-1">0 transactions</p>
+            </div>
+            <div class="bg-navy-800 border border-navy-700 p-5 rounded-2xl">
+                <p class="text-xs text-gray-400 uppercase font-semibold">Cash in Drawer</p>
+                <p id="kpi-cash-total" class="text-2xl font-extrabold text-emerald-400 mt-1 font-mono">GH₵ 0.00</p>
+                <p class="text-[11px] text-gray-400 mt-1">Physical cash collected</p>
+            </div>
+            <div class="bg-navy-800 border border-navy-700 p-5 rounded-2xl">
+                <p class="text-xs text-gray-400 uppercase font-semibold">MoMo Collections</p>
+                <p id="kpi-momo-total" class="text-2xl font-extrabold text-amber-400 mt-1 font-mono">GH₵ 0.00</p>
+                <p class="text-[11px] text-gray-400 mt-1">MTN / Telecel / AT</p>
+            </div>
+            <div class="bg-navy-800 border border-navy-700 p-5 rounded-2xl">
+                <p class="text-xs text-gray-400 uppercase font-semibold">Credit / Unpaid</p>
+                <p id="kpi-credit-total" class="text-2xl font-extrabold text-rose-400 mt-1 font-mono">GH₵ 0.00</p>
+                <p class="text-[11px] text-gray-400 mt-1">Customer tabs owed</p>
+            </div>
+        </div>
+
+        <!-- Report Actions Bar -->
+        <div class="bg-navy-800 border border-navy-700 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <label class="text-xs font-bold text-gray-300 uppercase">Filter Date:</label>
+                <input type="date" id="ledger-date-filter" onchange="renderLedger()" class="bg-navy-900 border border-navy-600 rounded-xl px-3 py-2 text-xs text-white">
+                <button onclick="document.getElementById('ledger-date-filter').value=''; renderLedger();" class="text-xs text-teal-400 hover:underline">Show All</button>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="sendWhatsAppDailyReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">📲 Send Closing Report to WhatsApp</button>
+                <button onclick="exportSalesCSV()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">📥 Export Excel / CSV</button>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="bg-navy-800 border border-navy-700 rounded-2xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-navy-950 border-b border-navy-700 text-[11px] uppercase text-gray-400">
+                            <th class="py-3.5 px-4">Receipt #</th>
+                            <th class="py-3.5 px-4">Date & Time</th>
+                            <th class="py-3.5 px-4">Customer</th>
+                            <th class="py-3.5 px-4">Items Sold</th>
+                            <th class="py-3.5 px-4">Method</th>
+                            <th class="py-3.5 px-4 text-right">Total (GH₵)</th>
+                            <th class="py-3.5 px-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-table-body" class="divide-y divide-navy-700/60 text-xs"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Item / Weight / MoMo Service Modal -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-navy-800 border border-navy-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-navy-700 pb-3">
+                <h3 class="font-bold text-white">Add Custom Item / MoMo Commission</h3>
+                <button onclick="closeCustomItemModal()" class="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div class="space-y-3">
+                <input type="text" id="custom-name" placeholder="Item or Service (e.g. MoMo Commission / Goat Cut)" class="w-full bg-navy-900 border border-navy-600 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" step="0.01" id="custom-price" placeholder="Unit Price (GH₵)" class="bg-navy-900 border border-navy-600 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                    <input type="number" step="0.1" id="custom-qty" value="1" placeholder="Qty / Weight (kg)" class="bg-navy-900 border border-navy-600 rounded-xl px-3.5 py-2.5 text-sm text-white">
+                </div>
+                <button onclick="addCustomItemToTicket()" class="w-full bg-teal-500 hover:bg-teal-400 text-navy-950 font-extrabold py-2.5 rounded-xl text-sm transition">Add to Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sale Completed Receipt Modal -->
+    <div id="sale-receipt-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+        <div class="bg-navy-950 border border-teal-500/40 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div id="printable-receipt" class="space-y-3 text-xs">
+                <div class="text-center border-b border-navy-800 pb-3">
+                    <h3 class="text-lg font-extrabold uppercase text-white">FOCUSED WISE VENTURES</h3>
+                    <p class="text-[11px] text-teal-400">Gbetsiley / Accra Branch • Tel: +973 33481914</p>
+                    <p id="rec-meta" class="text-[11px] text-gray-400 mt-1 font-mono"></p>
+                </div>
+                <div id="rec-lines" class="space-y-1.5 border-b border-navy-800 pb-3"></div>
+                <div class="space-y-1 text-sm font-bold">
+                    <div class="flex justify-between text-gray-300 text-xs"><span>Payment Mode:</span><span id="rec-method"></span></div>
+                    <div class="flex justify-between text-base text-teal-400"><span>TOTAL PAID:</span><span id="rec-total" class="font-mono"></span></div>
+                </div>
+                <p class="text-center text-[11px] text-gray-400 pt-2">Thank you for your patronage!</p>
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-2">
+                <button onclick="window.print()" class="bg-navy-800 hover:bg-navy-700 text-white font-bold py-2.5 rounded-xl text-xs">🖨️ Print</button>
+                <button onclick="shareReceiptWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs">📲 WhatsApp</button>
+                <button onclick="closeSaleReceipt()" class="bg-teal-500 text-navy-950 font-extrabold py-2.5 rounded-xl text-xs">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const JSONBIN_BIN_ID = '6af6a0fbffd5d16053bdde2c';
+        const JSONBIN_API_KEY = '$2a$10$EQueRDn8UeTLOAxC80QQXO0jpKomw6CVVJNKNvtXamS13ZQqaClpe';
+
+        let products = [];
+        let ticket = [];
+        let salesHistory = JSON.parse(localStorage.getItem('fwv_sales_ledger') || '[]');
+        let selectedPayment = 'Cash';
+        let posFilter = 'all';
+        let lastCompletedSale = null;
+
+        // Auth Check
+        if (sessionStorage.getItem('fwv_pos_unlocked') === 'true') {
+            document.getElementById('pos-lock-screen').classList.add('hidden');
+        }
+
+        function unlockPOS() {
+            const pass = document.getElementById('pos-passcode').value;
+            if (pass === '@Wisekofi01') {
+                sessionStorage.setItem('fwv_pos_unlocked', 'true');
+                document.getElementById('pos-lock-screen').classList.add('hidden');
+                document.getElementById('pos-passcode').value = '';
+            } else {
+                alert('Incorrect passcode.');
+            }
+        }
+
+        function lockPOS() {
+            sessionStorage.removeItem('fwv_pos_unlocked');
+            document.getElementById('pos-lock-screen').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cached = localStorage.getItem('fwv_products');
+            if (cached) {
+                try { products = JSON.parse(cached); } catch(e) {}
+            }
+            document.getElementById('ledger-date-filter').value = new Date().toISOString().split('T')[0];
+            generateTicketNumber();
+            renderPOSGrid();
+            renderTicket();
+            renderLedger();
+            fetchLiveProducts();
+        });
+
+        async function fetchLiveProducts() {
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.record)) {
+                        products = data.record;
+                        localStorage.setItem('fwv_products', JSON.stringify(products));
+                        renderPOSGrid();
+                    }
+                }
+            } catch (e) {
+                document.getElementById('sync-indicator').innerText = '● Offline / Local Cache Mode';
+            }
+        }
+
+        function switchView(view) {
+            document.getElementById('view-register').classList.toggle('hidden', view !== 'register');
+            document.getElementById('view-ledger').classList.toggle('hidden', view !== 'ledger');
+            
+            document.getElementById('nav-register').className = view === 'register' 
+                ? 'px-4 py-1.5 rounded-lg text-xs font-bold bg-teal-500 text-navy-950 transition'
+                : 'px-4 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition';
+            document.getElementById('nav-ledger').className = view === 'ledger' 
+                ? 'px-4 py-1.5 rounded-lg text-xs font-bold bg-teal-500 text-navy-950 transition'
+                : 'px-4 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition';
+
+            if (view === 'ledger') renderLedger();
+        }
+
+        function setPOSFilter(cat) {
+            posFilter = cat;
+            document.querySelectorAll('.pos-cat').forEach(btn => {
+                btn.className = 'pos-cat px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-navy-900 text-gray-300';
+            });
+            document.getElementById(`pfilter-${cat}`).className = 'pos-cat px-3.5 py-1.5 rounded-lg text-xs font-bold bg-teal-500 text-navy-950';
+            renderPOSGrid();
+        }
+
+        function renderPOSGrid() {
+            const grid = document.getElementById('pos-product-grid');
+            const query = document.getElementById('pos-search').value.trim().toLowerCase();
+            grid.innerHTML = '';
+
+            let filtered = posFilter === 'all' ? products : products.filter(p => p.category === posFilter);
+            if (query) {
+                filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
+            }
+
+            filtered.forEach(p => {
+                const isOut = p.stock === 'out-of-stock';
+                const card = document.createElement('button');
+                card.disabled = isOut;
+                card.onclick = () => addToTicket(p);
+                card.className = `text-left p-3.5 rounded-2xl border transition flex flex-col justify-between ${
+                    isOut 
+                    ? 'bg-navy-900/40 border-navy-800 opacity-50 cursor-not-allowed' 
+                    : 'bg-navy-800 hover:bg-navy-700 border-navy-700 hover:border-teal-500/50 shadow-md active:scale-95'
+                }`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-1 mb-1.5">
+                            <span class="text-[10px] uppercase font-bold text-gray-400">${p.category}</span>
+                            ${p.stock === 'low-stock' ? '<span class="w-2 h-2 rounded-full bg-amber-400" title="Low Stock"></span>' : ''}
+                            ${isOut ? '<span class="text-[10px] text-rose-400 font-bold">OUT</span>' : ''}
+                        </div>
+                        <p class="font-bold text-white text-xs sm:text-sm leading-snug line-clamp-2">${p.name}</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-navy-700/60 flex items-baseline justify-between">
+                        <span class="text-teal-400 font-extrabold text-sm">GH₵ ${Number(p.price).toFixed(2)}</span>
+                        <span class="text-[10px] text-gray-400">/${p.unit}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function generateTicketNumber() {
+            document.getElementById('ticket-number').innerText = 'REC-' + Date.now().toString().slice(-6);
+        }
+
+        function addToTicket(product) {
+            const existing = ticket.find(item => item.id === product.id);
+            if (existing) {
+                existing.qty = Number((existing.qty + 1).toFixed(2));
+            } else {
+                ticket.push({ id: product.id, name: product.name, price: Number(product.price), unit: product.unit, qty: 1 });
+            }
+            renderTicket();
+        }
+
+        function setTicketQty(index, newQty) {
+            const val = parseFloat(newQty);
+            if (isNaN(val) || val <= 0) {
+                ticket.splice(index, 1);
+            } else {
+                ticket[index].qty = val;
+            }
+            renderTicket();
+        }
+
+        function clearTicket() {
+            ticket = [];
+            document.getElementById('pos-discount').value = 0;
+            document.getElementById('cash-received').value = '';
+            document.getElementById('pos-customer').value = '';
+            generateTicketNumber();
+            renderTicket();
+        }
+
+        function renderTicket() {
+            const container = document.getElementById('ticket-items');
+            container.innerHTML = '';
+
+            if (ticket.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-500 text-xs">Tap products on the left to start a sale.</div>`;
+                updateTicketTotals();
+                return;
+            }
+
+            ticket.forEach((item, idx) => {
+                const row = document.createElement('div');
+                row.className = 'pt-2.5 first:pt-0 flex items-center justify-between gap-2';
+                row.innerHTML = `
+                    <div class="flex-grow pr-1">
+                        <p class="font-bold text-white text-xs">${item.name}</p>
+                        <p class="text-[11px] text-gray-400">GH₵ ${item.price.toFixed(2)} / ${item.unit}</p>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <input type="number" step="0.1" value="${item.qty}" onchange="setTicketQty(${idx}, this.value)" class="w-14 bg-navy-900 border border-navy-600 rounded-lg px-2 py-1 text-center text-xs font-bold text-teal-400" title="Edit quantity or weight (kg)">
+                        <span class="text-xs font-bold text-white w-16 text-right font-mono">GH₵ ${(item.price * item.qty).toFixed(2)}</span>
+                        <button onclick="setTicketQty(${idx}, 0)" class="text-rose-400 hover:text-rose-300 text-xs font-bold px-1">✕</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+            updateTicketTotals();
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.className = 'pay-btn bg-navy-800 text-gray-300 font-bold py-2 rounded-xl text-xs border border-navy-600 transition';
+            });
+            document.getElementById(`pay-${method}`).className = 'pay-btn bg-teal-500 text-navy-950 font-extrabold py-2 rounded-xl text-xs border border-teal-400 transition';
+            document.getElementById('cash-tender-box').classList.toggle('hidden', method !== 'Cash');
+        }
+
+        function updateTicketTotals() {
+            const subtotal = ticket.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const discount = parseFloat(document.getElementById('pos-discount').value) || 0;
+            const total = Math.max(0, subtotal - discount);
+
+            document.getElementById('pos-subtotal').innerText = `GH₵ ${subtotal.toFixed(2)}`;
+            document.getElementById('pos-total').innerText = `GH₵ ${total.toFixed(2)}`;
+
+            const tendered = parseFloat(document.getElementById('cash-received').value) || 0;
+            const change = tendered > total ? tendered - total : 0;
+            document.getElementById('cash-change').innerText = `GH₵ ${change.toFixed(2)}`;
+        }
+
+        function openCustomItemModal() { document.getElementById('custom-modal').classList.remove('hidden'); }
+        function closeCustomItemModal() { document.getElementById('custom-modal').classList.add('hidden'); }
+
+        function addCustomItemToTicket() {
+            const name = document.getElementById('custom-name').value.trim();
+            const price = parseFloat(document.getElementById('custom-price').value);
+            const qty = parseFloat(document.getElementById('custom-qty').value) || 1;
+            if (!name || isNaN(price) || price <= 0) { alert('Enter valid item name and price.'); return; }
+
+            ticket.push({ id: 'custom_' + Date.now(), name, price, unit: 'item', qty });
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-price').value = '';
+            document.getElementById('custom-qty').value = '1';
+            closeCustomItemModal();
+            renderTicket();
+        }
+
+        function completeSale() {
+            if (ticket.length === 0) { alert('Add at least one item to complete a sale.'); return; }
+
+            const subtotal = ticket.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            const discount = parseFloat(document.getElementById('pos-discount').value) || 0;
+            const total = Math.max(0, subtotal - discount);
+            const customer = document.getElementById('pos-customer').value.trim() || 'Walk-in Customer';
+            const receiptId = document.getElementById('ticket-number').innerText;
+            const now = new Date();
+
+            const saleRecord = {
+                id: receiptId,
+                date: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                customer,
+                items: [...ticket],
+                subtotal,
+                discount,
+                total,
+                method: selectedPayment
+            };
+
+            salesHistory.unshift(saleRecord);
+            localStorage.setItem('fwv_sales_ledger', JSON.stringify(salesHistory));
+            lastCompletedSale = saleRecord;
+
+            // Show Receipt Modal
+            document.getElementById('rec-meta').innerText = `${saleRecord.id} • ${saleRecord.date} ${saleRecord.time} • ${saleRecord.customer}`;
+            document.getElementById('rec-method').innerText = saleRecord.method;
+            document.getElementById('rec-total').innerText = `GH₵ ${saleRecord.total.toFixed(2)}`;
+            
+            const linesEl = document.getElementById('rec-lines');
+            linesEl.innerHTML = '';
+            saleRecord.items.forEach(item => {
+                linesEl.innerHTML += `<div class="flex justify-between text-gray-200"><span>${item.name} (${item.qty} ${item.unit})</span><span class="font-mono">GH₵ ${(item.price * item.qty).toFixed(2)}</span></div>`;
+            });
+            if (saleRecord.discount > 0) {
+                linesEl.innerHTML += `<div class="flex justify-between text-amber-400"><span>Discount</span><span class="font-mono">-GH₵ ${saleRecord.discount.toFixed(2)}</span></div>`;
+            }
+
+            document.getElementById('sale-receipt-modal').classList.remove('hidden');
+            clearTicket();
+            renderLedger();
+        }
+
+        function closeSaleReceipt() {
+            document.getElementById('sale-receipt-modal').classList.add('hidden');
+        }
+
+        function shareReceiptWhatsApp() {
+            if (!lastCompletedSale) return;
+            const s = lastCompletedSale;
+            let text = `*FOCUSED WISE VENTURES - RECEIPT*\nReceipt: ${s.id}\nDate: ${s.date} ${s.time}\nCustomer: ${s.customer}\n\n`;
+            s.items.forEach(i => { text += `• ${i.name} (${i.qty}x) - GH₵ ${(i.price * i.qty).toFixed(2)}\n`; });
+            if (s.discount > 0) text += `Discount: -GH₵ ${s.discount.toFixed(2)}\n`;
+            text += `\n*TOTAL PAID (${s.method}): GH₵ ${s.total.toFixed(2)}*\nThank you for shopping with us!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function renderLedger() {
+            const filterDate = document.getElementById('ledger-date-filter').value;
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            // Compute Today's KPIs
+            const todaySales = salesHistory.filter(s => s.date === todayStr);
+            const todayTotal = todaySales.reduce((sum, s) => sum + s.total, 0);
+            const cashTotal = todaySales.filter(s => s.method === 'Cash').reduce((sum, s) => sum + s.total, 0);
+            const momoTotal = todaySales.filter(s => s.method === 'MTN MoMo' || s.method === 'Telecel/AT').reduce((sum, s) => sum + s.total, 0);
+            const creditTotal = todaySales.filter(s => s.method === 'Credit').reduce((sum, s) => sum + s.total, 0);
+
+            document.getElementById('kpi-today-total').innerText = `GH₵ ${todayTotal.toFixed(2)}`;
+            document.getElementById('kpi-today-count').innerText = `${todaySales.length} transaction${todaySales.length === 1 ? '' : 's'}`;
+            document.getElementById('kpi-cash-total').innerText = `GH₵ ${cashTotal.toFixed(2)}`;
+            document.getElementById('kpi-momo-total').innerText = `GH₵ ${momoTotal.toFixed(2)}`;
+            document.getElementById('kpi-credit-total').innerText = `GH₵ ${creditTotal.toFixed(2)}`;
+
+            // Render Table
+            const tbody = document.getElementById('ledger-table-body');
+            tbody.innerHTML = '';
+
+            const displayList = filterDate ? salesHistory.filter(s => s.date === filterDate) : salesHistory;
+
+            if (displayList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-400">No sales recorded for this period.</td></tr>`;
+                return;
+            }
+
+            displayList.forEach(s => {
+                const itemsSummary = s.items.map(i => `${i.name} (${i.qty})`).join(', ');
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-navy-900/50 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-mono text-teal-400 font-bold">${s.id}</td>
+                    <td class="py-3 px-4 text-gray-300">${s.date} <span class="text-gray-500">${s.time}</span></td>
+                    <td class="py-3 px-4 font-semibold text-white">${s.customer}</td>
+                    <td class="py-3 px-4 text-gray-300 max-w-xs truncate" title="${itemsSummary}">${itemsSummary}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-navy-900 border border-navy-600 text-teal-400">${s.method}</span></td>
+                    <td class="py-3 px-4 text-right font-mono font-extrabold text-white">GH₵ ${s.total.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="deleteSaleRecord('${s.id}')" class="text-rose-400 hover:text-rose-300 font-bold">Void</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteSaleRecord(id) {
+            if (confirm('Void and delete this transaction record?')) {
+                salesHistory = salesHistory.filter(s => s.id !== id);
+                localStorage.setItem('fwv_sales_ledger', JSON.stringify(salesHistory));
+                renderLedger();
+            }
+        }
+
+        function exportSalesCSV() {
+            if (salesHistory.length === 0) { alert('No sales records to export.'); return; }
+            let csv = 'Receipt ID,Date,Time,Customer,Items,Payment Method,Subtotal,Discount,Total (GHS)\n';
+            salesHistory.forEach(s => {
+                const itemsStr = s.items.map(i => `${i.name} x${i.qty}`).join(' | ').replace(/,/g, '');
+                csv += `${s.id},${s.date},${s.time},"${s.customer}","${itemsStr}",${s.method},${s.subtotal.toFixed(2)},${s.discount.toFixed(2)},${s.total.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `FWV_Sales_Report_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function sendWhatsAppDailyReport() {
+            const dateStr = document.getElementById('ledger-date-filter').value || new Date().toISOString().split('T')[0];
+            const daySales = salesHistory.filter(s => s.date === dateStr);
+            const total = daySales.reduce((sum, s) => sum + s.total, 0);
+            const cash = daySales.filter(s => s.method === 'Cash').reduce((sum, s) => sum + s.total, 0);
+            const momo = daySales.filter(s => s.method === 'MTN MoMo' || s.method === 'Telecel/AT').reduce((sum, s) => sum + s.total, 0);
+            const credit = daySales.filter(s => s.method === 'Credit').reduce((sum, s) => sum + s.total, 0);
+
+            const msg = `*FOCUSED WISE VENTURES - DAILY CLOSING REPORT*\n📅 Date: ${dateStr}\n🧾 Total Transactions: ${daySales.length}\n\n💵 Cash Sales: GH₵ ${cash.toFixed(2)}\n📱 MoMo Sales: GH₵ ${momo.toFixed(2)}\n📝 Credit Sales: GH₵ ${credit.toFixed(2)}\n-------------------------\n💰 *GROSS REVENUE: GH₵ ${total.toFixed(2)}*`;
+            window.open(`https://wa.me/97333481914?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
