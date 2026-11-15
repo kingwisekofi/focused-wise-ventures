@@ -248,6 +248,10 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <a href="pos.html" target="_blank" class="text-xs bg-teal-500 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow">🧾 Open POS Terminal ↗</a>
+                        
+                        <!-- Install App Button -->
+                        <button id="install-app-btn" onclick="installPWAApp()" class="hidden text-xs bg-amber-500 hover:bg-amber-400 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow transition">📱 Install App</button>
+
                         <a href="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" download="FWV_Logo.jpg" target="_blank" class="text-xs bg-navy-900 text-teal-400 border border-teal-500/30 font-bold px-3 py-1.5 rounded-lg">📥 Logo</a>
                         <button id="admin-lock-btn" onclick="lockAdmin()" class="hidden text-xs bg-rose-500/20 text-rose-300 px-3 py-1.5 rounded-lg">Lock</button>
                         <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white p-2 rounded-lg bg-navy-900">✕</button>
@@ -298,6 +302,29 @@
     </footer>
 
     <script>
+        // PWA App Installation Prompt Trigger
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        function installPWAApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('install-app-btn').classList.add('hidden');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                alert('To install, you can also use your browser menu (three dots in top right) and select "Install App" or "Add to Home screen".');
+            }
+        }
+
         const JSONBIN_BIN_ID = '6af6a0fbffd5d16053bdde2c';
         const JSONBIN_API_KEY = '$2a$10$EQueRDn8UeTLOAxC80QQXO0jpKomw6CVVJNKNvtXamS13ZQqaClpe';
 
@@ -510,7 +537,6 @@
             const fee = parseFloat(document.getElementById('delivery-location').value);
             const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
             
-            // Deduct stock for website order
             cart.forEach(item => {
                 let prod = products.find(p => p.id === item.id);
                 if (prod) prod.stockQty = Math.max(0, prod.stockQty - item.quantity);
