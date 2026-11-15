@@ -51,6 +51,7 @@
                 Call/WhatsApp: <a href="https://wa.me/97333481914" target="_blank" class="text-teal-400 hover:underline">+973 33481914</a>
             </div>
             <div class="hidden md:flex items-center space-x-1 text-gray-400">
+                <svg class="w-3.5 h-3.5 text-teal-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                 <span>Store Locations: Gbetsiley / Accra Branch</span>
             </div>
         </div>
@@ -60,7 +61,7 @@
     <header class="bg-navy-900/95 backdrop-blur-md border-b border-navy-800 sticky top-0 z-40 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
             <a href="#top" class="flex items-center space-x-3 shrink-0">
-                <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Logo" class="w-11 h-11 rounded-xl object-cover shadow-lg border border-teal-400/40">
+                <img src="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" alt="Focused Wise Ventures Logo" class="w-11 h-11 rounded-xl object-cover shadow-lg border border-teal-400/40">
                 <div>
                     <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-white uppercase leading-tight">
                         FOCUSED WISE <span class="text-teal-400">VENTURES</span>
@@ -82,7 +83,7 @@
                     <input type="text" id="catalog-search" onkeyup="renderCatalog()" placeholder="Search foods, apparel..." class="w-full bg-navy-800 border border-navy-700 rounded-full pl-9 pr-4 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-teal-500 transition">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
-                <button onclick="scrollToCart()" class="lg:hidden relative bg-navy-800 hover:bg-navy-700 border border-navy-700 text-white p-2.5 rounded-xl shadow-lg flex items-center space-x-2 transition">
+                <button onclick="scrollToCart()" aria-label="Jump to Shopping Cart" class="lg:hidden relative bg-navy-800 hover:bg-navy-700 border border-navy-700 text-white p-2.5 rounded-xl shadow-lg flex items-center space-x-2 transition">
                     <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     <span id="cart-badge-mobile" class="absolute -top-2 -right-2 bg-teal-500 text-navy-950 text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
                 </button>
@@ -93,6 +94,9 @@
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Hero Banner -->
         <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-navy-950 via-navy-800 to-teal-900/80 border border-teal-500/20 p-8 sm:p-12 lg:p-14 mb-10 shadow-2xl">
+            <svg class="hidden md:block absolute right-8 bottom-0 w-72 h-72 text-teal-400/10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
             <div class="relative z-10 max-w-2xl">
                 <span class="inline-block text-[11px] uppercase tracking-widest text-teal-400 font-bold bg-teal-950/90 px-3.5 py-1.5 rounded-full border border-teal-500/30 mb-5">YOUR ALL-IN-ONE MULTI-SERVICE ENTERPRISE</span>
                 <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">Innovative Services.<br><span class="text-teal-400">Strategize & Thrive.</span></h2>
@@ -104,6 +108,12 @@
             </div>
         </div>
 
+        <!-- Mobile Search Bar -->
+        <div class="sm:hidden mb-6">
+            <input type="text" id="catalog-search-mobile" onkeyup="syncSearch(this.value)" placeholder="Search frozen foods, apparel, services..." class="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-teal-500">
+        </div>
+
+        <!-- Category Tabs -->
         <div id="store-catalog" class="scroll-mt-24 flex items-center justify-between flex-wrap gap-4 mb-6">
             <div class="flex items-center space-x-2 overflow-x-auto no-scrollbar pb-1">
                 <button onclick="filterCatalog('all')" id="tab-all" class="cat-tab px-5 py-2.5 rounded-xl font-semibold text-sm whitespace-nowrap bg-teal-500 text-navy-950 shadow-md transition">All Products</button>
@@ -117,13 +127,14 @@
             </div>
         </div>
 
+        <!-- Catalog & Permanent Cart Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
             <div class="lg:col-span-8">
                 <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"></div>
             </div>
 
             <!-- Cart Section -->
-            <div class="lg:col-span-4 lg:sticky lg:top-28">
+            <div id="shopping-cart-section" class="scroll-mt-24 lg:col-span-4 lg:sticky lg:top-28">
                 <div class="bg-navy-800 border border-navy-700 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                     <div class="p-5 bg-navy-900 border-b border-navy-700 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
@@ -154,6 +165,7 @@
                                 <option value="Morning Delivery (8:00 AM - 12:00 PM)">🌅 Morning (8:00 AM - 12:00 PM)</option>
                                 <option value="Afternoon Delivery (1:00 PM - 5:00 PM)">☀️ Afternoon (1:00 PM - 5:00 PM)</option>
                                 <option value="Evening Delivery (5:00 PM - 8:00 PM)">🌙 Evening (5:00 PM - 8:00 PM)</option>
+                                <option value="Scheduled for Tomorrow">📅 Scheduled for Tomorrow</option>
                             </select>
                         </div>
 
@@ -165,6 +177,7 @@
 
                         <div class="space-y-2 pt-1">
                             <input type="text" id="customer-name" placeholder="Your Full Name" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
+                            <input type="tel" id="customer-phone" placeholder="Phone / WhatsApp Number (e.g. 024...)" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
                             <div class="flex gap-2">
                                 <input type="text" id="customer-address" placeholder="Delivery Address / Landmark" class="w-full bg-navy-800 border border-navy-600 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-teal-500">
                                 <button type="button" onclick="getGPSLocation()" title="Use GPS" class="bg-teal-600 hover:bg-teal-500 text-white px-3 rounded-xl font-bold flex items-center justify-center shrink-0">📍</button>
@@ -172,7 +185,19 @@
                             <p id="gps-status" class="text-[11px] text-teal-400 pl-1"></p>
                         </div>
 
-                        <button onclick="openReceiptModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition"><span>📄 Review Itemized Receipt</span></button>
+                        <button onclick="openReceiptModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex items-center justify-center space-x-2 transition">
+                            <span>📄 Review Itemized Receipt</span>
+                        </button>
+
+                        <!-- Call & Follow-Up Support Buttons inside Shopping Cart -->
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <a href="tel:+97333481914" class="bg-navy-800 hover:bg-navy-700 border border-navy-700 text-white font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+                                <span>📞 Call Support</span>
+                            </a>
+                            <a href="https://wa.me/97333481914?text=Hello%20Focused%2C%20I%20would%20like%20to%20send%20a%20follow-up%20message%20regarding%20my%20order." target="_blank" class="bg-navy-800 hover:bg-navy-700 border border-teal-500/30 text-teal-400 font-bold py-2.5 px-2 rounded-xl text-xs flex items-center justify-center space-x-1.5 transition">
+                                <span>💬 Send Follow-Up</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -215,12 +240,16 @@
             <div class="bg-navy-950 border border-amber-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-gray-100">
                 <div class="text-center pb-5 border-b border-navy-800 relative">
                     <button onclick="closeReceiptModal()" class="absolute right-0 top-0 text-gray-400 hover:text-white p-2 rounded-lg bg-navy-900">✕</button>
+                    <span class="inline-block bg-amber-500/20 text-amber-400 text-xs font-extrabold px-3.5 py-1 rounded-full border border-amber-500/30 mb-2 uppercase tracking-wider">📄 Review Itemized Receipt</span>
                     <h3 class="text-xl font-extrabold uppercase text-white">FOCUSED WISE VENTURES</h3>
                     <p class="text-xs text-teal-400 mt-1">Order Draft <span id="receipt-draft-id" class="font-mono font-bold"></span></p>
                 </div>
                 <div class="py-4 space-y-2 text-xs border-b border-navy-800">
                     <div class="flex justify-between"><span class="text-gray-400">Customer:</span><span id="receipt-customer-name" class="font-bold text-white"></span></div>
-                    <div class="flex justify-between"><span class="text-gray-400">Address:</span><span id="receipt-address" class="font-medium text-white max-w-[220px] truncate"></span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Phone:</span><span id="receipt-customer-phone" class="font-bold text-white"></span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Delivery Zone:</span><span id="receipt-zone" class="font-medium text-teal-400 text-right"></span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Address / GPS:</span><span id="receipt-address" class="font-medium text-white max-w-[220px] truncate"></span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Availability:</span><span id="receipt-availability" class="font-medium text-amber-400 text-right"></span></div>
                 </div>
                 <div class="py-4 border-b border-navy-800"><div id="receipt-items-list" class="space-y-2.5 max-h-44 overflow-y-auto pr-1"></div></div>
                 <div class="py-4 space-y-2 text-sm border-b border-navy-800">
@@ -229,12 +258,17 @@
                     <div class="flex justify-between text-lg font-extrabold text-white pt-2 border-t border-navy-800"><span>TOTAL</span><span id="receipt-grand-total" class="text-amber-400 font-mono"></span></div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 pt-4">
-                    <button onclick="closeReceiptModal()" class="bg-rose-950/40 border border-rose-500/30 text-rose-300 font-bold py-3 rounded-xl text-xs">Edit</button>
-                    <button onclick="confirmOrderWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg">Confirm & Send Order</button>
+                    <button onclick="closeReceiptModal()" class="bg-rose-950/40 border border-rose-500/30 text-rose-300 font-bold py-3 rounded-xl text-xs">Cancel / Edit</button>
+                    <button onclick="confirmOrderWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg">✓ Confirm & Send Order</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Floating Quick WhatsApp Inquiry Button -->
+    <a href="https://wa.me/97333481914?text=Hello%20Focused%2C%20I%20would%20like%20to%20make%20an%20inquiry" target="_blank" title="Chat with us on WhatsApp" class="fixed bottom-6 right-5 z-30 bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl border border-emerald-400/30 flex items-center justify-center transition transform hover:scale-105">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+    </a>
 
     <!-- Admin Modal -->
     <div id="admin-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
@@ -248,10 +282,7 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         <a href="pos.html" target="_blank" class="text-xs bg-teal-500 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow">🧾 Open POS Terminal ↗</a>
-                        
-                        <!-- Install App Button (Hidden on non-supporting desktop browsers like desktop Firefox) -->
                         <button id="install-app-btn" onclick="installPWAApp()" class="hidden text-xs bg-amber-500 hover:bg-amber-400 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow transition">📱 Install App</button>
-
                         <a href="https://i.ibb.co/zVkpGmLM/LOGO2.jpg" download="FWV_Logo.jpg" target="_blank" class="text-xs bg-navy-900 text-teal-400 border border-teal-500/30 font-bold px-3 py-1.5 rounded-lg">📥 Logo</a>
                         <button id="admin-lock-btn" onclick="lockAdmin()" class="hidden text-xs bg-rose-500/20 text-rose-300 px-3 py-1.5 rounded-lg">Lock</button>
                         <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white p-2 rounded-lg bg-navy-900">✕</button>
@@ -302,7 +333,6 @@
     </footer>
 
     <script>
-        // PWA App Installation Prompt Trigger
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -321,7 +351,7 @@
                     deferredPrompt = null;
                 });
             } else {
-                alert('To install, use your browser menu (three dots in top right) and select "Install App" or "Add to Home screen".');
+                alert('To install, use your browser menu and select "Install App" or "Add to Home screen".');
             }
         }
 
@@ -341,18 +371,49 @@
             { id: 'p10', name: 'Document Printing & Lamination', category: 'general', price: 3, stockQty: 500, unit: 'page', image: '' }
         ];
 
-        let products = fallbackProducts;
+        function normalizeProducts(list) {
+            return list.map(p => ({
+                ...p,
+                price: Number(p.price) || 0,
+                stockQty: p.stockQty !== undefined ? Number(p.stockQty) : (p.stock === 'out-of-stock' ? 0 : p.stock === 'low-stock' ? 3 : 20)
+            }));
+        }
+
+        let products = normalizeProducts(fallbackProducts);
         let cart = [];
         let currentFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', () => {
             const cached = localStorage.getItem('fwv_products');
-            if (cached) { try { let p = JSON.parse(cached); if (Array.isArray(p) && p.length > 0) products = p; } catch(e){} }
+            if (cached) {
+                try {
+                    let p = JSON.parse(cached);
+                    if (Array.isArray(p) && p.length > 0) products = normalizeProducts(p);
+                } catch(e) {}
+            }
+            const savedCart = localStorage.getItem('fwv_cart');
+            if (savedCart) {
+                try {
+                    let c = JSON.parse(savedCart);
+                    if (Array.isArray(c)) cart = c;
+                } catch(e) {}
+            }
             updateCartUI();
             calculateMoMo();
             renderCatalog();
             fetchCloudProducts();
         });
+
+        function scrollToCart() {
+            const cartEl = document.getElementById('shopping-cart-section');
+            if (cartEl) cartEl.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function syncSearch(val) {
+            const desktopSearch = document.getElementById('catalog-search');
+            if (desktopSearch) desktopSearch.value = val;
+            renderCatalog();
+        }
 
         async function fetchCloudProducts() {
             try {
@@ -360,7 +421,7 @@
                 if (res.ok) {
                     const data = await res.json();
                     if (data && Array.isArray(data.record) && data.record.length > 0) {
-                        products = data.record;
+                        products = normalizeProducts(data.record);
                         localStorage.setItem('fwv_products', JSON.stringify(products));
                         renderCatalog();
                     }
@@ -396,9 +457,9 @@
             grid.innerHTML = '';
 
             let filtered = currentFilter === 'all' ? products : products.filter(p => p.category === currentFilter);
-            if (query) filtered = filtered.filter(p => p.name.toLowerCase().includes(query));
+            if (query) filtered = filtered.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
 
-            document.getElementById('catalog-count').innerText = `Showing ${filtered.length} items`;
+            document.getElementById('catalog-count').innerText = `Showing ${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
 
             if (filtered.length === 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 bg-navy-800/50 rounded-2xl border border-navy-800">No matching products found.</div>`;
@@ -417,13 +478,13 @@
                 card.innerHTML = `
                     <div>
                         <div class="w-full h-36 bg-navy-900 rounded-xl mb-3 flex items-center justify-center border border-navy-700 text-teal-400 overflow-hidden">
-                            ${p.image ? `<img src="${p.image}" class="w-full h-full object-cover">` : `<svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`}
+                            ${p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">` : `<svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`}
                         </div>
                         <div class="flex items-center justify-between mb-2"><span class="text-[10px] uppercase text-gray-400 font-semibold">${p.category}</span>${badge}</div>
                         <h3 class="font-bold text-white text-sm mb-1">${p.name}</h3>
                         <p class="text-teal-400 font-extrabold text-sm mb-3">GH₵ ${Number(p.price).toFixed(2)} <span class="text-xs text-gray-400">/ ${p.unit}</span></p>
                     </div>
-                    <button onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="w-full font-bold py-2 rounded-xl text-xs transition ${isOut ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-400 text-navy-950'}">${isOut ? 'Out of Stock' : 'Add to Cart'}</button>
+                    <button id="add-btn-${p.id}" onclick="addToCart('${p.id}')" ${isOut ? 'disabled' : ''} class="w-full font-bold py-2 rounded-xl text-xs transition ${isOut ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-400 text-navy-950'}">${isOut ? 'Out of Stock' : 'Add to Cart'}</button>
                 `;
                 grid.appendChild(card);
             });
@@ -447,6 +508,16 @@
                 cart.push({ ...p, quantity: 1 });
             }
             updateCartUI();
+
+            const btn = document.getElementById(`add-btn-${id}`);
+            if (btn) {
+                btn.innerText = '✓ Added!';
+                btn.classList.replace('bg-teal-500', 'bg-emerald-500');
+                setTimeout(() => {
+                    btn.innerText = 'Add to Cart';
+                    btn.classList.replace('bg-emerald-500', 'bg-teal-500');
+                }, 800);
+            }
         }
 
         function updateQuantity(id, change) {
@@ -461,24 +532,35 @@
             updateCartUI();
         }
 
-        function removeFromCart(id) { cart = cart.filter(i => i.id !== id); updateCartUI(); }
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartUI();
+        }
 
         function updateCartUI() {
+            localStorage.setItem('fwv_cart', JSON.stringify(cart));
             const count = cart.reduce((s, i) => s + i.quantity, 0);
-            document.getElementById('cart-badge').innerText = `${count} items`;
+            document.getElementById('cart-badge').innerText = `${count} item${count === 1 ? '' : 's'}`;
             document.getElementById('cart-badge-mobile').innerText = count;
             const container = document.getElementById('cart-items-container');
             container.innerHTML = '';
-            if (cart.length === 0) { container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Cart is empty.</div>`; updateCartTotals(); return; }
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs">Cart is empty.</div>`;
+                updateCartTotals();
+                return;
+            }
             cart.forEach(item => {
                 container.innerHTML += `
                     <div class="pt-3 first:pt-0 flex items-center justify-between gap-2 text-xs">
-                        <div><p class="font-bold text-white">${item.name}</p><p class="text-teal-400">GH₵ ${item.price} x ${item.quantity}</p></div>
-                        <div class="flex items-center space-x-1">
-                            <button onclick="updateQuantity('${item.id}', -1)" class="w-5 h-5 bg-navy-700 rounded text-white font-bold">-</button>
+                        <div>
+                            <p class="font-bold text-white">${item.name}</p>
+                            <p class="text-teal-400">GH₵ ${Number(item.price).toFixed(2)} x ${item.quantity}</p>
+                        </div>
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="w-5 h-5 bg-navy-700 hover:bg-navy-600 rounded text-white font-bold">-</button>
                             <span class="w-4 text-center font-bold">${item.quantity}</span>
-                            <button onclick="updateQuantity('${item.id}', 1)" class="w-5 h-5 bg-navy-700 rounded text-white font-bold">+</button>
-                            <button onclick="removeFromCart('${item.id}')" class="text-rose-400 font-bold ml-1">✕</button>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="w-5 h-5 bg-navy-700 hover:bg-navy-600 rounded text-white font-bold">+</button>
+                            <button onclick="removeFromCart('${item.id}')" title="Remove Item" class="text-rose-400 hover:text-rose-300 font-bold ml-1 px-1">✕</button>
                         </div>
                     </div>
                 `;
@@ -487,7 +569,7 @@
         }
 
         function updateCartTotals() {
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            const subtotal = cart.reduce((s, i) => s + (Number(i.price) * i.quantity), 0);
             const fee = parseFloat(document.getElementById('delivery-location').value);
             document.getElementById('cart-subtotal').innerText = `GH₵ ${subtotal.toFixed(2)}`;
             document.getElementById('cart-delivery-fee').innerText = `GH₵ ${fee.toFixed(2)}`;
@@ -503,29 +585,44 @@
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
                     const data = await res.json();
-                    addr.value = data.display_name || `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+                    addr.value = data.display_name || `Lat: ${pos.coords.latitude.toFixed(4)}, Lon: ${pos.coords.longitude.toFixed(4)}`;
                     status.innerText = '✓ Found GPS!';
-                } catch(e) { addr.value = `${pos.coords.latitude}, ${pos.coords.longitude}`; status.innerText = '✓ Captured!'; }
+                } catch(e) {
+                    addr.value = `Lat: ${pos.coords.latitude.toFixed(4)}, Lon: ${pos.coords.longitude.toFixed(4)}`;
+                    status.innerText = '✓ Captured!';
+                }
             }, () => status.innerText = 'GPS denied.');
         }
 
         function openReceiptModal() {
             if (cart.length === 0) { alert('Cart is empty.'); return; }
             const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
             const address = document.getElementById('customer-address').value.trim();
-            if (!name || !address) { alert('Enter name and address.'); return; }
+            if (!name || !phone || !address) { alert('Please enter your full name, phone number, and delivery address.'); return; }
+
+            const deliverySelect = document.getElementById('delivery-location');
+            const zoneText = deliverySelect.options[deliverySelect.selectedIndex].text;
+            const availabilityText = document.getElementById('delivery-availability').value;
+
             document.getElementById('receipt-draft-id').innerText = '#FWV-' + Math.floor(10000 + Math.random()*90000);
             document.getElementById('receipt-customer-name').innerText = name;
+            document.getElementById('receipt-customer-phone').innerText = phone;
+            document.getElementById('receipt-zone').innerText = zoneText;
             document.getElementById('receipt-address').innerText = address;
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            const fee = parseFloat(document.getElementById('delivery-location').value);
+            document.getElementById('receipt-availability').innerText = availabilityText;
+
+            const subtotal = cart.reduce((s, i) => s + (Number(i.price) * i.quantity), 0);
+            const fee = parseFloat(deliverySelect.value);
             document.getElementById('receipt-subtotal').innerText = `GH₵ ${subtotal.toFixed(2)}`;
             document.getElementById('receipt-delivery-fee').innerText = `GH₵ ${fee.toFixed(2)}`;
             document.getElementById('receipt-grand-total').innerText = `GH₵ ${(subtotal + fee).toFixed(2)}`;
 
             const list = document.getElementById('receipt-items-list');
             list.innerHTML = '';
-            cart.forEach(i => list.innerHTML += `<div class="flex justify-between text-xs text-gray-300"><span>${i.name} (${i.quantity}x)</span><span class="font-bold text-white">GH₵ ${i.price * i.quantity}</span></div>`);
+            cart.forEach((i, idx) => {
+                list.innerHTML += `<div class="flex justify-between text-xs text-gray-300"><span>#0${idx + 1} ${i.name} (${i.quantity}x)</span><span class="font-bold text-white">GH₵ ${(Number(i.price) * i.quantity).toFixed(2)}</span></div>`;
+            });
             document.getElementById('receipt-modal').classList.remove('hidden');
         }
 
@@ -533,10 +630,16 @@
 
         async function confirmOrderWhatsApp() {
             const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
             const address = document.getElementById('customer-address').value.trim();
-            const fee = parseFloat(document.getElementById('delivery-location').value);
-            const subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-            
+            const deliverySelect = document.getElementById('delivery-location');
+            const fee = parseFloat(deliverySelect.value);
+            const zoneText = deliverySelect.options[deliverySelect.selectedIndex].text;
+            const availabilityText = document.getElementById('delivery-availability').value;
+            const draftId = document.getElementById('receipt-draft-id').innerText;
+            const subtotal = cart.reduce((s, i) => s + (Number(i.price) * i.quantity), 0);
+            const grandTotal = subtotal + fee;
+
             cart.forEach(item => {
                 let prod = products.find(p => p.id === item.id);
                 if (prod) prod.stockQty = Math.max(0, prod.stockQty - item.quantity);
@@ -544,9 +647,10 @@
             await syncProductsToCloud();
             renderCatalog();
 
-            let msg = `*NEW ONLINE ORDER*\n👤 ${name}\n📍 ${address}\n\n`;
-            cart.forEach(i => msg += `• ${i.name} (${i.quantity}x) - GH₵ ${i.price * i.quantity}\n`);
-            msg += `\nSubtotal: GH₵ ${subtotal}\nDelivery: GH₵ ${fee}\n*TOTAL: GH₵ ${subtotal + fee}*`;
+            let msg = `Hello Focused, I would like to make an order\n\n*NEW ORDER - FOCUSED WISE VENTURES* (${draftId})\n👤 *Customer:* ${name}\n📞 *Phone:* ${phone}\n📍 *Address/GPS:* ${address}\n🚚 *Zone:* ${zoneText}\n⏰ *Availability:* ${availabilityText}\n\n📦 *Order Breakdown:*\n`;
+            cart.forEach((i, idx) => msg += `#0${idx + 1} ${i.name} (${i.quantity}x) - GH₵ ${(Number(i.price) * i.quantity).toFixed(2)}\n`);
+            msg += `\n🔹 *Subtotal:* GH₵ ${subtotal.toFixed(2)}\n🔹 *Delivery:* GH₵ ${fee.toFixed(2)}\n💰 *TOTAL PAYABLE:* GH₵ ${grandTotal.toFixed(2)}`;
+
             window.open(`https://wa.me/97333481914?text=${encodeURIComponent(msg)}`, '_blank');
             cart = [];
             updateCartUI();
@@ -589,6 +693,11 @@
             await syncProductsToCloud();
             renderCatalog();
             renderAdminList();
+            document.getElementById('new-prod-name').value = '';
+            document.getElementById('new-prod-price').value = '';
+            document.getElementById('new-prod-stock').value = '';
+            document.getElementById('new-prod-unit').value = '';
+            document.getElementById('new-prod-img').value = '';
             alert('Product added successfully!');
         }
 
@@ -607,7 +716,7 @@
                             <input type="text" id="adm-name-${p.id}" value="${p.name}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-white font-medium">
                         </div>
                         <div class="grid grid-cols-3 gap-2">
-                            <div><label class="text-[9px] text-gray-400 uppercase">Price (GH₵)</label><input type="number" id="adm-p-${p.id}" value="${p.price}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-teal-400 font-bold"></div>
+                            <div><label class="text-[9px] text-gray-400 uppercase">Price (GH₵)</label><input type="number" step="0.01" id="adm-p-${p.id}" value="${p.price}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-teal-400 font-bold"></div>
                             <div><label class="text-[9px] text-gray-400 uppercase">Stock Qty</label><input type="number" id="adm-q-${p.id}" value="${p.stockQty}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-amber-400 font-bold"></div>
                             <div><label class="text-[9px] text-gray-400 uppercase">Image URL</label><input type="text" id="adm-i-${p.id}" value="${p.image || ''}" class="w-full bg-navy-800 border border-navy-600 rounded p-1.5 text-white"></div>
                         </div>
