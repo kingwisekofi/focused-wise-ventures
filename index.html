@@ -395,12 +395,13 @@
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="toggleAdminModal()"></div>
         <div class="flex items-center justify-center min-h-screen p-4 relative z-10">
             <div class="bg-navy-800 border border-navy-700 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative">
-                <div class="flex items-center justify-between pb-4 border-b border-navy-700 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-navy-700 mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-white flex items-center gap-2">Live Cloud Store Manager</h3>
                         <p class="text-xs text-teal-400">Changes saved here update immediately for all customers worldwide.</p>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a href="pos.html" target="_blank" class="text-xs bg-teal-500 hover:bg-teal-400 text-navy-950 font-extrabold px-3 py-1.5 rounded-lg shadow transition">🧾 Open POS Terminal ↗</a>
                         <button id="admin-lock-btn" onclick="lockAdmin()" class="hidden text-xs bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white px-3 py-1.5 rounded-lg transition">Lock</button>
                         <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-white p-2 rounded-lg bg-navy-900 hover:bg-navy-700 transition">✕</button>
                     </div>
